@@ -1,9 +1,9 @@
 package Tests;
 
+
+import Orchestrator.UdpMulticastEndpoint;
+import org.eclipse.californium.core.CoapServer;
 import org.eclipse.californium.core.network.CoapEndpoint;
-import org.eclipse.californium.core.network.config.NetworkConfig;
-import org.eclipse.californium.elements.Connector;
-import org.eclipse.californium.elements.UdpMulticastConnector;
 
 import java.io.IOException;
 import java.net.*;
@@ -51,10 +51,19 @@ public class Demo {
         System.out.println("Distributed NFV Orchestration");
         if(args.length > 0 && args[0].equals("server"))
         {
-            InetSocketAddress mGroup = new InetSocketAddress("239.0.10.15", 0);
-            InetSocketAddress sock = new InetSocketAddress(5600);
-            ServerInterface si = new ServerInterface("192.168.0.1","239.0.10.15");
-            si.startCoapServer();
+            UdpMulticastEndpoint ep1 = new UdpMulticastEndpoint("192.168.0.2","239.0.10.15");
+            UdpMulticastEndpoint ep2 = new UdpMulticastEndpoint("192.168.1.1","239.0.10.15");
+            CoapEndpoint coapEp1 = new CoapEndpoint.Builder().setConnector(ep1).build();
+            CoapEndpoint coapEp2 = new CoapEndpoint.Builder().setConnector(ep2).build();
+            //ep1.start();
+            CoapServer coapServer = new CoapServer();
+            coapServer.addEndpoint(coapEp1);
+            coapServer.addEndpoint(coapEp2);
+            coapServer.start();
+            System.out.println("Successfully started ep1");
+            //ep2.start();
+            System.out.println("Successfully started ep2");
+            while(true);
         }
         else if(args.length > 0 && args[0].equalsIgnoreCase("client"))
         {
@@ -70,7 +79,7 @@ public class Demo {
     }
 
     public static void main(String[] args) throws IOException {
-        test1(args);
+        test2(args);
 
     }
 }
