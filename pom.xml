@@ -9,10 +9,41 @@
     <version>1.0</version>
 
     <properties>
-
+        <sl4fj-version>1.7.26</sl4fj-version>
+        <californium-version>2.2.3</californium-version>
+        <jackson-json-version>2.9.9.3</jackson-json-version>
     </properties>
 
     <dependencies>
+        <dependency>
+            <groupId>org.yaml</groupId>
+            <artifactId>snakeyaml</artifactId>
+            <version>1.26</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.eclipse.californium</groupId>
+            <artifactId>element-connector</artifactId>
+            <version>${californium-version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.eclipse.californium</groupId>
+            <artifactId>californium-core</artifactId>
+            <version>${californium-version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-simple</artifactId>
+            <version>${sl4fj-version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>${jackson-json-version}</version>
+        </dependency>
 
     </dependencies>
 
@@ -35,7 +66,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>Tests.Demo</mainClass>
+                            <mainClass>Tests.Main</mainClass>
                         </manifest>
                     </archive>
                     <descriptorRefs>
