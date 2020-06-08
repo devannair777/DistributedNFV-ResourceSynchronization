@@ -2,40 +2,81 @@ package Orchestrator.Resources;
 
 import Formatters.JsonFormatter;
 import Orchestrator.Messages.Hello;
+import Orchestrator.Messages.NetworkTopology;
 import org.eclipse.californium.core.CoapResource;
 import org.eclipse.californium.core.coap.CoAP;
 import org.eclipse.californium.core.coap.MediaTypeRegistry;
 import org.eclipse.californium.core.server.resources.CoapExchange;
+import org.yaml.snakeyaml.Yaml;
 
+import java.io.BufferedWriter;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
 
 public class NSHello extends CoapResource {
 
+    private static Neighborhood neighborhood = new Neighborhood();
     private Hello helloMsg;
+    private String ipAddress;
 
-    public NSHello(String name) {
-        super(name);
+    public static Neighborhood getNeighborhood() {
+        return neighborhood;
     }
 
-    public NSHello()
+    public NSHello() {
+        super("hello");
+    }
+
+    public NSHello(String ipAddr)
     {
-        this("hello");
+        this();
+
+        this.ipAddress = ipAddr;
+
     }
 
     @Override
     public void handlePOST(CoapExchange exchange) {
-        LOGGER.info("Inside POST Handler");
-        try
+
+        String recvCtx = exchange.getSourceAddress().getHostAddress();
+        if( ! recvCtx.equalsIgnoreCase(this.ipAddress))
         {
-            Hello rcvdMsg = (Hello) JsonFormatter
-                    .getObjectRepresentation(exchange.getRequestText(),Hello.class);
-            LOGGER.info(rcvdMsg.toString());
-            exchange.respond(CoAP.ResponseCode.CONTENT,
-                    "", MediaTypeRegistry.APPLICATION_JSON);
+            BufferedWriter bufferedWriter = null;
+            LOGGER.info("Inside POST Handler.Reveived Request from : " + recvCtx);
+            try {
+                Hello rcvdMsg = (Hello) JsonFormatter
+                        .getObjectRepresentation(exchange.getRequestText(), Hello.class);
+                //LOGGER.info(rcvdMsg.toString());
+                NeighborTopology n = new NeighborTopology();
+                n.setHostId(rcvdMsg.getHostId());
+                n.setRemoteTopology(rcvdMsg.getLocalTopology());
+                neighborhood.getNeighbors().add(n);
+                Yaml yaml = new Yaml();
+                bufferedWriter = new BufferedWriter(
+                        new FileWriter("NeighborTopology.yaml",false)
+                );
+                yaml.dump(neighborhood,bufferedWriter);
+                LOGGER.info("Successfully updated NeighborTopology");
+                exchange.respond(CoAP.ResponseCode.CONTENT,
+                        "", MediaTypeRegistry.APPLICATION_JSON);
+
+            } catch (IOException ioe) {
+                LOGGER.error(ioe.getMessage());
+            }
+            finally {
+                try {
+                    bufferedWriter.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
         }
-        catch (IOException ioe)
+        else
         {
-            LOGGER.error(ioe.getMessage());
+            //Only process requests that are not sent by the present interface as
+            // the current interface also has a multicast server listening
+            //pass
         }
 
     }

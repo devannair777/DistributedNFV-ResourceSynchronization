@@ -24,4 +24,12 @@ public class Hello
     public void setLocalTopology(NetworkTopology localTopology) {
         this.localTopology = localTopology;
     }
+
+    @Override
+    public String toString() {
+        return "Hello{" +
+                "hostId='" + hostId + '\'' +
+                ", localTopology=" + localTopology +
+                '}';
+    }
 }

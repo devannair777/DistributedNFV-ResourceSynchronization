@@ -7,6 +7,9 @@ import org.eclipse.californium.core.network.CoapEndpoint;
 
 import java.io.IOException;
 import java.net.*;
+import java.sql.Timestamp;
+import java.util.Date;
+import java.util.Scanner;
 
 public class Demo {
 
@@ -78,8 +81,24 @@ public class Demo {
 
     }
 
-    public static void main(String[] args) throws IOException {
-        test2(args);
+    public static void test3()
+    {
+        Date then = new Date();
+        Timestamp ts = new Timestamp(then.getTime());
 
+        Scanner sc = new Scanner(System.in);
+        System.out.println("Enter when you wish to compare");
+        int k = sc.nextInt();
+        Date now = new Date();
+        Timestamp ts2 = new Timestamp(now.getTime());
+        int diff = (int) (ts2.getTime() - ts.getTime())/1000;
+        System.out.println("Comparison of two times : "
+        + diff + " sec");
+
+    }
+
+    public static void main(String[] args) throws IOException {
+      //  test2(args);
+        test3();
     }
 }

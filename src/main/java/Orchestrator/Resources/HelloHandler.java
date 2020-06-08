@@ -18,9 +18,20 @@ public class HelloHandler implements CoapHandler {
 
     @Override
     public void onLoad(CoapResponse coapResponse) {
-        LOGGER.info("Inside Hello Response Handler for SynchInterface : " + synchInterface.getIpAddress());
-        LOGGER.info("Received packet from Interface : "+coapResponse
-                .advanced().getSourceContext());
+        String dstIPAddr = coapResponse.advanced().getSourceContext().toString()
+                            .split("\\:")[0]
+                            .split("\\(")[1];
+
+            LOGGER.info("Inside Hello Response Handler for SynchInterface : " + synchInterface.getIpAddress());
+            LOGGER.info("Received Response from Interface : "+dstIPAddr);
+
+        /*else
+        {
+            //Process responses received only from remote interfaces as local interfaces
+            //also respond to multicast requests
+            //pass
+        }*/
+
     }
 
     @Override

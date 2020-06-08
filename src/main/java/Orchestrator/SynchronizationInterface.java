@@ -98,8 +98,8 @@ public class SynchronizationInterface
         LOGGER.info("Inside Process Method ...");
         this.coapClient.setURI(mCastURIBase + "hello");
         LOGGER.info("Coap Client Target uri : "+this.coapClient.getURI());
-        String postMsg = JsonFormatter.getjsonRepresentation(this.nsHelloMsg);
-        this.coapClient.post(helloHandler,postMsg, MediaTypeRegistry.APPLICATION_JSON);
+        String helloMsg = JsonFormatter.getjsonRepresentation(this.nsHelloMsg);
+        this.coapClient.post(helloHandler,helloMsg, MediaTypeRegistry.APPLICATION_JSON);
         LOGGER.info("Successfully sent Hello Message");
         /**/
     }

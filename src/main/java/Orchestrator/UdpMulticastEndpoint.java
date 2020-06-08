@@ -43,7 +43,7 @@ public class UdpMulticastEndpoint extends UdpMulticastConnector {
 
 
         MulticastSocket socket = new MulticastSocket(null);
-        socket.setLoopbackMode(true);
+        socket.setLoopbackMode(false);
         try {
             socket.bind(new InetSocketAddress(5600));
             LOGGER.info("socket {}, loopback mode {}",
