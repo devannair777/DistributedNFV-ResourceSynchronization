@@ -53,8 +53,8 @@ public class NeighborValidators  {
                         if(diff > 30)
                         {
                             String log = new StringBuilder()
-                                    .append("Possible node failure :" + nt.getHostId())
-                                    .append(" after Time : "+ t)
+                                    .append("Possible Interface failure :" + nt.getHostId())
+                                    .append(" after Time : "+ t + ". Down for :" +diff +" (sec)")
                                     .append("\n")
                                     .toString();
                             bufferedWriter.write(log);

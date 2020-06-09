@@ -9,6 +9,8 @@ import Orchestrator.Validators.NeighborValidators;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import java.io.FileNotFoundException;
+import java.net.InetSocketAddress;
+import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -17,7 +19,7 @@ import java.util.List;
 import java.util.Scanner;
 
 public class Main {
-    public static void main(String[] args) throws FileNotFoundException, SocketException, JsonProcessingException {
+    public static void main(String[] args) throws FileNotFoundException, SocketException, JsonProcessingException, InterruptedException {
         ConfigLoader.setFileName("conf.yaml");
         Scanner sc = new Scanner(System.in);
         int i = 0;
@@ -49,37 +51,62 @@ public class Main {
             }
         }
         NeighborValidators nv = new NeighborValidators();
-        ///while loop and schedule the whole process below
-
+        //while loop and schedule the whole process below
+        int count = 0;
+        ArrayList<String> localInterfaces ;
+        while(count < 20)
+        {
+        localInterfaces = new ArrayList<>();
         Date date = new Date();
         Timestamp ts = new Timestamp(date.getTime());
         NetworkTopology nt = new NetworkTopology();
+
+        // Check if interfaces are running before assigning to local topology matrix
+
+        for(String intf :  cf.getInterfaces())
+        {
+            NetworkInterface ni = NetworkInterface.getByInetAddress(
+                    new InetSocketAddress(intf,5600).getAddress()
+            );
+            if(ni.isUp())
+            {
+                localInterfaces.add(intf);
+            }
+
+        }
+
         nt.setCNFVOMCastGrp(synchMGroup);
-        nt.setActiveInterfaces(cf.getInterfaces());
+        nt.setActiveInterfaces(localInterfaces);
         nt.setTimestamp(ts);
         for(SynchronizationInterface s : synchArray)
         {
+
             s.getNsHelloMsg().setHostId(hostId);
             s.getNsHelloMsg().setLocalTopology(nt);
         }
 
-        System.out.println("Press 1 to send hello messages : ");
-        int j = sc.nextInt();
-        if(j == 1)
-        {
+        //System.out.println("Press 1 to send hello messages : ");
+        //int j = sc.nextInt();
             for(SynchronizationInterface si : synchArray)
             {
+
                 try
                 {
                     si.process();
                 }
                 catch (Exception e)
                 {
+                    System.out.println("The link is down !!" + si.getIpAddress());
                     //Log when an interface goes down
                 }
             }
-        }
 
-        NSHello.getNeighborhood().getNeighbors().clear();
+        Thread.sleep(5000);
+        System.out.println("After sleep");
+        //NSHello.getNeighborhood().getNeighbors().clear(); Doesnt make the NeighborTopology.yaml maximal
+        //entry list
+        count ++;
+        }
+        // while loop end
     }
 }

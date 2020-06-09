@@ -8,6 +8,7 @@ import org.eclipse.californium.core.network.CoapEndpoint;
 import java.io.IOException;
 import java.net.*;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Scanner;
 
@@ -97,8 +98,28 @@ public class Demo {
 
     }
 
+    public static void test4()
+    {
+        ArrayList<Integer> list = new ArrayList<>();
+        list.add(1);
+        list.add(7);
+        list.add(5);
+        list.add(6);
+
+        System.out.println("List before modification : "+list);
+
+        list.set(2,4);
+        System.out.println("List after modification : "+list);
+    }
+
+    public static void test5() throws SocketException {
+        NetworkInterface ni = NetworkInterface.getByInetAddress(new InetSocketAddress("192.168.0.2",2000).getAddress());
+        System.out.println("Interface status : "+ni.isUp());
+    }
+
     public static void main(String[] args) throws IOException {
       //  test2(args);
-        test3();
+        //test4();
+        test5();
     }
 }

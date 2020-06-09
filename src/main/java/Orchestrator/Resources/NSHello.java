@@ -12,11 +12,10 @@ import org.yaml.snakeyaml.Yaml;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.ArrayList;
 
 public class NSHello extends CoapResource {
 
-    private static Neighborhood neighborhood = new Neighborhood();
+    private static Neighborhood neighborhood = new Neighborhood(); //Maximal neighborhood entry list
     private Hello helloMsg;
     private String ipAddress;
 
@@ -43,6 +42,7 @@ public class NSHello extends CoapResource {
         if( ! recvCtx.equalsIgnoreCase(this.ipAddress))
         {
             BufferedWriter bufferedWriter = null;
+            FileWriter fw = null;
             LOGGER.info("Inside POST Handler.Reveived Request from : " + recvCtx);
             try {
                 Hello rcvdMsg = (Hello) JsonFormatter
@@ -51,11 +51,34 @@ public class NSHello extends CoapResource {
                 NeighborTopology n = new NeighborTopology();
                 n.setHostId(rcvdMsg.getHostId());
                 n.setRemoteTopology(rcvdMsg.getLocalTopology());
-                neighborhood.getNeighbors().add(n);
+                //Find if the given host Id already exists in the maximal list
+                int index = 0;
+                boolean found = false;
+                for(NeighborTopology nt : neighborhood.getNeighbors())
+                {
+                    if(nt.getHostId().equalsIgnoreCase(n.getHostId()))
+                    {
+                        found = true;
+                        break;
+                    }
+                     index ++;
+                }
+                if(found)
+                {
+                    //If yes then update with new timestamp
+                    neighborhood.getNeighbors().set(index,n);
+                }
+                else
+                {
+                    //If no create a new entry with the POST information
+                    neighborhood.getNeighbors().add(n);
+                }
+                //If no Hello request received about the same keep maximal neighborhood
+                // list as it is
+                // neighborhood.getNeighbors().add(n);
                 Yaml yaml = new Yaml();
-                bufferedWriter = new BufferedWriter(
-                        new FileWriter("NeighborTopology.yaml",false)
-                );
+                fw = new FileWriter("NeighborTopology.yaml",false);
+                bufferedWriter = new BufferedWriter(fw);
                 yaml.dump(neighborhood,bufferedWriter);
                 LOGGER.info("Successfully updated NeighborTopology");
                 exchange.respond(CoAP.ResponseCode.CONTENT,
@@ -67,6 +90,7 @@ public class NSHello extends CoapResource {
             finally {
                 try {
                     bufferedWriter.close();
+                    fw.close();
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
