@@ -1,11 +1,15 @@
 package Tests;
 
 
+import Formatters.ResourceLoader;
+import Orchestrator.Messages.OrchestratorResource;
 import Orchestrator.UdpMulticastEndpoint;
 import org.eclipse.californium.core.CoapServer;
 import org.eclipse.californium.core.network.CoapEndpoint;
+import org.yaml.snakeyaml.Yaml;
+import org.yaml.snakeyaml.constructor.Constructor;
 
-import java.io.IOException;
+import java.io.*;
 import java.net.*;
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -117,9 +121,39 @@ public class Demo {
         System.out.println("Interface status : "+ni.isUp());
     }
 
+    public static void test6() throws IOException {
+        ArrayList<String> nl = new ArrayList<>();
+        ArrayList<String> sl = new ArrayList<>();
+
+
+        nl.add("Net1");nl.add("Net2");
+        sl.add("Sl1");sl.add("Sl2");
+        OrchestratorResource or = new OrchestratorResource();
+        or.setNetworkResources(nl);
+        or.setServiceResources(sl);
+
+        Yaml yaml = new Yaml();
+        BufferedWriter bw = new BufferedWriter(new FileWriter("test.yaml"));
+        yaml.dump(or,bw);
+
+    }
+
+    public static void test7() throws FileNotFoundException {
+
+        ResourceLoader.setFileName("test2.yaml");
+        OrchestratorResource r = ResourceLoader.getResourceFromYaml();
+        System.out.println(r);
+
+        ResourceLoader.setFileName("test.yaml");
+        OrchestratorResource r2 = ResourceLoader.getResourceFromYaml();
+        System.out.println(r2);
+    }
+
     public static void main(String[] args) throws IOException {
       //  test2(args);
         //test4();
-        test5();
+        //test5();
+        test6();
+        test7();
     }
 }

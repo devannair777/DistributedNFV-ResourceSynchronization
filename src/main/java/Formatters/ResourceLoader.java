@@ -5,6 +5,7 @@ import org.yaml.snakeyaml.Yaml;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
@@ -41,8 +42,24 @@ public class ResourceLoader
     public ResourceLoader(){}
 
     public  static OrchestratorResource getResourceFromYaml() throws FileNotFoundException {
-        Map<String, List<String>> mp = yaml.load(new FileReader(fileName));
-        OrchestratorResource resrc = new OrchestratorResource(mp);
+        OrchestratorResource resrc = null;
+        FileReader fr = null;
+        try {
+            Map<String, List<String>> mp = yaml.load(new FileReader(fileName));
+            resrc = new OrchestratorResource(mp);
+        }
+        catch (Exception e)
+        {
+            Yaml yaml = new Yaml();
+            fr = new FileReader(fileName);
+
+            resrc = yaml.load(fr);
+            try {
+                fr.close();
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
+        }
         return resrc;
     }
 

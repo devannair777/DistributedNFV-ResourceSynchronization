@@ -1,5 +1,6 @@
 package Orchestrator.Validators;
 
+import Orchestrator.Resources.NSHello;
 import Orchestrator.Resources.NeighborTopology;
 import Orchestrator.Resources.Neighborhood;
 import org.slf4j.Logger;
@@ -7,7 +8,6 @@ import org.slf4j.LoggerFactory;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.*;
-import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.Date;
 import java.util.Timer;
@@ -33,17 +33,12 @@ public class NeighborValidators  {
         public void run()
         {
             LOGGER.info("Inside Neighbor Validator routine");
-            File f = new File("NeighborTopology.yaml");
             BufferedWriter bufferedWriter = null;
-            FileReader yfr = null;
-            if(f.exists())
-            {
+
                 try
                 {
-                    yfr = new FileReader("NeighborTopology.yaml");
-                    Yaml yaml = new Yaml();
-                    Neighborhood nh = yaml.load(yfr);
-                    bufferedWriter = new BufferedWriter(new FileWriter("NeighborLogs.log",true));
+                    Neighborhood nh = NSHello.getNeighborhood();
+                    bufferedWriter = new BufferedWriter(new FileWriter("Partitions.log",true));
                     for(NeighborTopology nt : nh.getNeighbors())
                     {
                         Date date = new Date();
@@ -69,12 +64,10 @@ public class NeighborValidators  {
                 } finally {
                     try {
                         bufferedWriter.close();
-                        yfr.close();
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
                 }
-            }
 
         }
     }

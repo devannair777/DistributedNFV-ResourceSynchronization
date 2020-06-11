@@ -38,4 +38,12 @@ public class OrchestratorResource
     public void setServiceResources(List<String> serviceResources) {
         ServiceResources = serviceResources;
     }
+
+    @Override
+    public String toString() {
+        return "OrchestratorResource{" +
+                "NetworkResources=" + NetworkResources +
+                ", ServiceResources=" + ServiceResources +
+                '}';
+    }
 }

@@ -36,4 +36,13 @@ public class SynchronizedOrchestratorResource
     public void setHostId(String hostId) {
         this.hostId = hostId;
     }
+
+    @Override
+    public String toString() {
+        return "SynchronizedOrchestratorResource{" +
+                "resource=" + resource +
+                ", timestamp=" + timestamp +
+                ", hostId='" + hostId + '\'' +
+                '}';
+    }
 }
