@@ -1,14 +1,16 @@
 package Orchestrator.Validators;
 
+import Orchestrator.Messages.SynchronizedOrchestratorResource;
 import Orchestrator.Resources.NSHello;
+import Orchestrator.Resources.NSSynchronize;
 import Orchestrator.Resources.NeighborTopology;
 import Orchestrator.Resources.Neighborhood;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.yaml.snakeyaml.Yaml;
 
 import java.io.*;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -33,16 +35,19 @@ public class NeighborValidators  {
         public void run()
         {
             LOGGER.info("Inside Neighbor Validator routine");
+            Date date = new Date();
+            Timestamp now = new Timestamp(date.getTime());
             BufferedWriter bufferedWriter = null;
 
                 try
                 {
+
                     Neighborhood nh = NSHello.getNeighborhood();
                     bufferedWriter = new BufferedWriter(new FileWriter("Partitions.log",true));
                     for(NeighborTopology nt : nh.getNeighbors())
                     {
-                        Date date = new Date();
-                        Timestamp now = new Timestamp(date.getTime());
+
+
                         Timestamp t = nt.getRemoteTopology().getTimestamp();
                         int diff = (int) (now.getTime() - t.getTime())/1000 ;
                         if(diff > 30)
@@ -64,6 +69,38 @@ public class NeighborValidators  {
                 } finally {
                     try {
                         bufferedWriter.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                BufferedWriter bw = null;
+                try
+                {
+                    bw = new BufferedWriter(new FileWriter("NetworkPartition.log",true));
+                    ArrayList<SynchronizedOrchestratorResource> orcUpdate =
+                    NSSynchronize.getMaximalResourceList();
+
+                    for(SynchronizedOrchestratorResource syn : orcUpdate)
+                    {
+                        Timestamp t2 = syn.getTimestamp();
+                        int diff2 = (int) (now.getTime() - t2.getTime())/1000 ;
+                        if(diff2 > 30)
+                        {
+                            String partitionLog = new StringBuilder()
+                                    .append("Possible Network Partition, failed node : " + syn.getHostId() )
+                                    .append(" after Time : "+ t2 + ". Down for :" +diff2 +" (sec)")
+                                    .append("\n")
+                                    .toString();
+                            bw.write(partitionLog);
+                        }
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                finally {
+                    try {
+                        bw.close();
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
