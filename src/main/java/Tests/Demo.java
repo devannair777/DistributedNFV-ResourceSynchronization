@@ -14,6 +14,7 @@ import java.net.*;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Random;
 import java.util.Scanner;
 
 public class Demo {
@@ -149,11 +150,19 @@ public class Demo {
         System.out.println(r2);
     }
 
+    public static void test8()
+    {
+        Random r = new Random();
+        int id = 1000+ r.nextInt(9000);
+        System.out.println("Id generated : "+id);
+    }
+
     public static void main(String[] args) throws IOException {
-      //  test2(args);
+        //test2(args);
         //test4();
         //test5();
-        test6();
-        test7();
+        //test6();
+        //test7();
+        test8();
     }
 }

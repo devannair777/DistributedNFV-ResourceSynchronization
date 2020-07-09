@@ -1,5 +1,6 @@
 package Orchestrator.Validators;
 
+import Formatters.Version;
 import Orchestrator.Messages.SynchronizedOrchestratorResource;
 import Orchestrator.Resources.NSHello;
 import Orchestrator.Resources.NSSynchronize;
@@ -18,6 +19,7 @@ import java.util.TimerTask;
 public class NeighborValidators  {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(NeighborValidators.class.getCanonicalName());
+    private ArrayList<Version> versionCache = new ArrayList<>();
     private Timer validationTimer ;
     private int updateInterval = 45000;
     private int delay = 30000;
@@ -26,6 +28,12 @@ public class NeighborValidators  {
     {
         this.validationTimer = new Timer();
         this.validationTimer.schedule(new NeighborValidation(),delay,updateInterval);
+        Version zVers = new Version();
+        zVers.setVersion(0);
+        for(int i=0;i<20;i++)
+        {
+            versionCache.add(zVers);
+        }
     }
 
     private class NeighborValidation extends TimerTask
@@ -38,27 +46,30 @@ public class NeighborValidators  {
             Date date = new Date();
             Timestamp now = new Timestamp(date.getTime());
             BufferedWriter bufferedWriter = null;
-
+            int index = 0;
                 try
                 {
 
                     Neighborhood nh = NSHello.getNeighborhood();
                     bufferedWriter = new BufferedWriter(new FileWriter("Partitions.log",true));
+
                     for(NeighborTopology nt : nh.getNeighbors())
                     {
 
 
-                        Timestamp t = nt.getRemoteTopology().getTimestamp();
-                        int diff = (int) (now.getTime() - t.getTime())/1000 ;
-                        if(diff > 30)
+                        Version t = nt.getRemoteTopology().getVersion();
+                        int diff = (int) (t.getVersion() - versionCache.get(index).getVersion()) ;
+                        if(diff == 0)
                         {
                             String log = new StringBuilder()
                                     .append("Possible Interface failure :" + nt.getHostId())
-                                    .append(" after Time : "+ t + ". Down for :" +diff +" (sec)")
+                                    .append(" after Version : "+ t.getVersion() )
                                     .append("\n")
                                     .toString();
                             bufferedWriter.write(log);
                         }
+
+                        index += 1;
                     }
 
                 }
@@ -74,6 +85,7 @@ public class NeighborValidators  {
                     }
                 }
 
+                index = 0;
                 BufferedWriter bw = null;
                 try
                 {
@@ -83,17 +95,19 @@ public class NeighborValidators  {
 
                     for(SynchronizedOrchestratorResource syn : orcUpdate)
                     {
-                        Timestamp t2 = syn.getTimestamp();
-                        int diff2 = (int) (now.getTime() - t2.getTime())/1000 ;
+                        Version t2 = syn.getVersion();
+                        int diff2 =   (t2.getVersion() - versionCache.get(index).getVersion()) ;
                         if(diff2 > 30)
                         {
                             String partitionLog = new StringBuilder()
-                                    .append("Possible Network Partition, failed node : " + syn.getHostId() )
-                                    .append(" after Time : "+ t2 + ". Down for :" +diff2 +" (sec)")
+                                    .append("Possible Desynchronization, failed node : " + syn.getHostId() )
+                                    .append(" after Version : "+ t2 )
                                     .append("\n")
                                     .toString();
                             bw.write(partitionLog);
                         }
+                        versionCache.set(index,t2);
+                        index += 1;
                     }
                 } catch (IOException e) {
                     e.printStackTrace();
