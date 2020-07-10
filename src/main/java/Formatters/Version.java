@@ -32,6 +32,13 @@ public class Version
         }
     }
 
+    @Override
+    public String toString() {
+        return "Version{" +
+                "version=" + version +
+                '}';
+    }
+
     public void inc_version()
     {
         this.version += 5;

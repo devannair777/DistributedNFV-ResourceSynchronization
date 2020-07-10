@@ -80,7 +80,7 @@ public class Main {
         NSSynchronize.getMaximalResourceList().add(initSynchOrch);
         ///
 
-        //NeighborValidators nv = new NeighborValidators();
+        NeighborValidators nv = new NeighborValidators(hostId);
         //while loop and schedule the whole process below
         int count = 0;
         ArrayList<String> localInterfaces ;
