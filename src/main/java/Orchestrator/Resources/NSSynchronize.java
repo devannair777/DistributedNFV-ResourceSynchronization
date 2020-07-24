@@ -70,8 +70,8 @@ public class NSSynchronize extends CoapResource {
                 {
                     ///If element is found then replace only if it is of a later timestamp
                     ///otherwise discard the update
-                    if(maximalResourceList.get(index).getTimestamp().after(
-                            synchOrch.getTimestamp()
+                    if(maximalResourceList.get(index).getVersion().after(
+                            synchOrch.getVersion()
                     ))
                     {
                         //Do nothing
@@ -117,8 +117,8 @@ public class NSSynchronize extends CoapResource {
                     {
                         ///If element is found then replace only if it is of a later timestamp
                         ///otherwise discard the update
-                        if(maximalResourceList.get(index).getTimestamp().after(
-                                sr.getTimestamp()
+                        if(maximalResourceList.get(index).getVersion().after(
+                                sr.getVersion()
                         ))
                         {
                             //Do nothing

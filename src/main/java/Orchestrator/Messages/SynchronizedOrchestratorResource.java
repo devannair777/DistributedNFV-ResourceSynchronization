@@ -1,11 +1,13 @@
 package Orchestrator.Messages;
 
+import Formatters.Version;
+
 import java.sql.Timestamp;
 
 public class SynchronizedOrchestratorResource
 {
     private OrchestratorResource resource;
-    private Timestamp timestamp;
+    private Version version;
     private String hostId = "";
 
     public SynchronizedOrchestratorResource()
@@ -21,12 +23,12 @@ public class SynchronizedOrchestratorResource
         this.resource = resource;
     }
 
-    public Timestamp getTimestamp() {
-        return timestamp;
+    public Version getVersion() {
+        return version;
     }
 
-    public void setTimestamp(Timestamp timestamp) {
-        this.timestamp = timestamp;
+    public void setVersion(Version version) {
+        this.version = version;
     }
 
     public String getHostId() {
@@ -41,7 +43,7 @@ public class SynchronizedOrchestratorResource
     public String toString() {
         return "SynchronizedOrchestratorResource{" +
                 "resource=" + resource +
-                ", timestamp=" + timestamp +
+                ", version=" + version +
                 ", hostId='" + hostId + '\'' +
                 '}';
     }

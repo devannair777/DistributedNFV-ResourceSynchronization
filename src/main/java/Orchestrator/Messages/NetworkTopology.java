@@ -1,5 +1,7 @@
 package Orchestrator.Messages;
 
+import Formatters.Version;
+
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
@@ -8,7 +10,8 @@ public class NetworkTopology
 {
     private String CNFVOMCastGrp = "";
     private List<String> activeInterfaces  ;
-    private Timestamp timestamp;
+    //private Timestamp timestamp;
+    private Version version;
     public NetworkTopology()
     {
         this.activeInterfaces = new ArrayList<>();
@@ -30,20 +33,28 @@ public class NetworkTopology
         this.activeInterfaces = activeInterfaces;
     }
 
-    public Timestamp getTimestamp() {
+    public Version getVersion() {
+        return version;
+    }
+
+    public void setVersion(Version version) {
+        this.version = version;
+    }
+
+    /*public Timestamp getTimestamp() {
         return timestamp;
     }
 
     public void setTimestamp(Timestamp timestamp) {
         this.timestamp = timestamp;
-    }
+    }*/
 
     @Override
     public String toString() {
         return "NetworkTopology{" +
                 "CNFVOMCastGrp='" + CNFVOMCastGrp + '\'' +
                 ", activeInterfaces=" + activeInterfaces +
-                ", timestamp=" + timestamp +
+                ", Version=" + version +
                 '}';
     }
 }

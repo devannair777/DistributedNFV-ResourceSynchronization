@@ -3,6 +3,7 @@ package Tests;
 import Formatters.Config;
 import Formatters.ConfigLoader;
 import Formatters.ResourceLoader;
+import Formatters.Version;
 import Orchestrator.Messages.NetworkTopology;
 import Orchestrator.Messages.OrchestratorResource;
 import Orchestrator.Messages.SynchronizedOrchestratorResource;
@@ -67,17 +68,19 @@ public class Main {
         }
 
         //Initialize a Dummy Resource list //
-        Date init = new Date();
-        Timestamp tsinit = new Timestamp(init.getTime());
+        //Date init = new Date();
+        //Timestamp tsinit = new Timestamp(init.getTime());
+        Version v_init = new Version();
         SynchronizedOrchestratorResource initSynchOrch = new SynchronizedOrchestratorResource();
         OrchestratorResource or1 = ResourceLoader.getResourceFromYaml();
         initSynchOrch.setHostId(hostId);
         initSynchOrch.setResource(or1);
-        initSynchOrch.setTimestamp(tsinit);
+        initSynchOrch.setVersion(v_init);
+        //initSynchOrch.setTimestamp(tsinit);
         NSSynchronize.getMaximalResourceList().add(initSynchOrch);
         ///
 
-        NeighborValidators nv = new NeighborValidators();
+        NeighborValidators nv = new NeighborValidators(hostId);
         //while loop and schedule the whole process below
         int count = 0;
         ArrayList<String> localInterfaces ;
@@ -89,7 +92,9 @@ public class Main {
         //Synchronized orchestrator object of the scheduler //
         OrchestratorResource orc = ResourceLoader. getResourceFromYaml();
         SynchronizedOrchestratorResource synOrch = new SynchronizedOrchestratorResource();
-        synOrch.setTimestamp(ts);
+        //synOrch.setTimestamp(ts);
+        v_init.inc_version();
+        synOrch.setVersion(v_init);
         synOrch.setResource(orc);
         synOrch.setHostId(hostId);
         ///
@@ -111,7 +116,8 @@ public class Main {
 
         nt.setCNFVOMCastGrp(synchMGroup);
         nt.setActiveInterfaces(localInterfaces);
-        nt.setTimestamp(ts);
+        //nt.setTimestamp(ts);///
+        nt.setVersion(v_init);
         for(SynchronizationInterface s : synchArray)
         {
 
