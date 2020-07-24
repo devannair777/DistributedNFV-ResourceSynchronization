@@ -25,8 +25,8 @@ public class Demo {
             InetSocketAddress mGroup = new InetSocketAddress("239.0.10.15",0);
 
             InetSocketAddress socket = new InetSocketAddress(5600);
-            InetSocketAddress socket2 = new InetSocketAddress("192.168.0.2",5600);
-            InetSocketAddress socket3 = new InetSocketAddress("192.168.1.1",5600);
+            InetSocketAddress socket2 = new InetSocketAddress(args[1],5600);
+            InetSocketAddress socket3 = new InetSocketAddress(args[2],5600);
 
             MulticastSocket mCastSocket = new MulticastSocket(null);
             mCastSocket.setLoopbackMode(false);
@@ -46,11 +46,19 @@ public class Demo {
         else if(args.length > 0 && args[0].equalsIgnoreCase("client"))
         {
             System.out.println("Starting Client application");
-            DatagramSocket clientEp = new DatagramSocket(5700);
+            MulticastSocket clientEp = new MulticastSocket(5700);
+            InetSocketAddress s1 = new InetSocketAddress(args[1],5700);
+          //  InetSocketAddress sd = new InetSocketAddress(5700);
+
+            NetworkInterface ni1 = NetworkInterface.getByInetAddress(s1.getAddress());
             InetAddress mGroup = InetAddress.getByName("239.0.10.15");
+
+            clientEp.setInterface(s1.getAddress());
+            clientEp.setTimeToLive(3);
             byte[] buf = new byte[256];
-            buf = args[1].getBytes();
+            buf = args[2].getBytes();
             DatagramPacket req = new DatagramPacket(buf,buf.length,mGroup,5600);
+
             clientEp.send(req);
         }
     }
@@ -150,10 +158,11 @@ public class Demo {
     }
 
     public static void main(String[] args) throws IOException {
-      //  test2(args);
+        test1(args);
+        //test2(args);
         //test4();
         //test5();
-        test6();
-        test7();
+        //test6();
+        //test7();
     }
 }
