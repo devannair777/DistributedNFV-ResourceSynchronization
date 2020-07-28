@@ -1,4 +1,4 @@
-package Orchestrator.Messages;
+package Orchestrator.Messages.Fields;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;

@@ -1,12 +1,22 @@
 package Orchestrator.Messages;
 
+import Orchestrator.Messages.Fields.NetworkTopology;
+import Orchestrator.Messages.Fields.Neighborhood;
+
+import java.util.HashMap;
+
 public class Hello
 {
     private String hostId = "";
-    private NetworkTopology localTopology;
+    private HashMap<String, Neighborhood> globalTopologyLedger;
+    private HashMap<String,Integer> globalVersionLedger;
+    private NetworkTopology cnfvoInfo ;
+
     public Hello()
     {
-        this.localTopology = new NetworkTopology();
+        this.globalTopologyLedger = new HashMap<>();
+        this.globalVersionLedger = new HashMap<>();
+        this.cnfvoInfo = new NetworkTopology();
     }
 
     public String getHostId() {
@@ -17,19 +27,37 @@ public class Hello
         this.hostId = hostId;
     }
 
-    public NetworkTopology getLocalTopology() {
-        return localTopology;
+    public HashMap<String, Neighborhood> getGlobalTopologyLedger() {
+        return globalTopologyLedger;
     }
 
-    public void setLocalTopology(NetworkTopology localTopology) {
-        this.localTopology = localTopology;
+    public void setGlobalTopologyLedger(HashMap<String, Neighborhood> globalTopologyLedger) {
+        this.globalTopologyLedger = globalTopologyLedger;
+    }
+
+    public HashMap<String, Integer> getGlobalVersionLedger() {
+        return globalVersionLedger;
+    }
+
+    public void setGlobalVersionLedger(HashMap<String, Integer> globalVersionLedger) {
+        this.globalVersionLedger = globalVersionLedger;
+    }
+
+    public NetworkTopology getCnfvoInfo() {
+        return cnfvoInfo;
+    }
+
+    public void setCnfvoInfo(NetworkTopology cnfvoInfo) {
+        this.cnfvoInfo = cnfvoInfo;
     }
 
     @Override
     public String toString() {
         return "Hello{" +
                 "hostId='" + hostId + '\'' +
-                ", localTopology=" + localTopology +
+                ", globalTopologyLedger=" + globalTopologyLedger +
+                ", globalVersionLedger=" + globalVersionLedger +
+                ", cnfvoInfo=" + cnfvoInfo +
                 '}';
     }
 }

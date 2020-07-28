@@ -4,13 +4,13 @@ import Formatters.Config;
 import Formatters.ConfigLoader;
 import Formatters.ResourceLoader;
 import Formatters.Version;
-import Orchestrator.Messages.NetworkTopology;
-import Orchestrator.Messages.OrchestratorResource;
-import Orchestrator.Messages.SynchronizedOrchestratorResource;
+import Orchestrator.Messages.Fields.NFVResource;
+import Orchestrator.Messages.Fields.NetworkTopology;
+import Orchestrator.Messages.Fields.OrchestratorResource;
 import Orchestrator.Resources.NSHello;
 import Orchestrator.Resources.NSSynchronize;
 import Orchestrator.SynchronizationInterface;
-import Orchestrator.Validators.NeighborValidators;
+import Orchestrator.Validators.ExpirationValidators;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.BufferedWriter;
@@ -20,16 +20,16 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
-import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
 
 public class Main {
+
+
     public static void main(String[] args) throws FileNotFoundException, SocketException,  InterruptedException {
         ConfigLoader.setFileName("conf.yaml");
         ResourceLoader.setFileName("resource.yaml");
+
+        NFVResource rsCache = new NFVResource();
 
         Scanner sc = new Scanner(System.in);
         int i = 0;
@@ -51,7 +51,7 @@ public class Main {
             {
                 System.out.println("Starting Interface : " + intf + " :: MCast group : " + synchMGroup + " ...");
                 SynchronizationInterface s = new SynchronizationInterface(intf, synchMGroup);
-                NSHello nsHello = new NSHello(intf);
+                NSHello nsHello = new NSHello(intf,hostId);
                 NSSynchronize nsynch = new NSSynchronize(intf);
                 s.setNsHello(nsHello);
                 s.setNsSynchronize(nsynch);
@@ -68,36 +68,49 @@ public class Main {
         }
 
         //Initialize a Dummy Resource list //
-        //Date init = new Date();
-        //Timestamp tsinit = new Timestamp(init.getTime());
         Version v_init = new Version();
-        SynchronizedOrchestratorResource initSynchOrch = new SynchronizedOrchestratorResource();
-        OrchestratorResource or1 = ResourceLoader.getResourceFromYaml();
-        initSynchOrch.setHostId(hostId);
-        initSynchOrch.setResource(or1);
-        initSynchOrch.setVersion(v_init);
-        //initSynchOrch.setTimestamp(tsinit);
-        NSSynchronize.getMaximalResourceList().add(initSynchOrch);
-        ///
+        ExpirationValidators nv = new ExpirationValidators(hostId);
 
-        NeighborValidators nv = new NeighborValidators(hostId);
         //while loop and schedule the whole process below
         int count = 0;
+
         ArrayList<String> localInterfaces ;
         while(count < 200)
         {
         localInterfaces = new ArrayList<>();
-        Date date = new Date();
-        Timestamp ts = new Timestamp(date.getTime());
         //Synchronized orchestrator object of the scheduler //
         OrchestratorResource orc = ResourceLoader. getResourceFromYaml();
-        SynchronizedOrchestratorResource synOrch = new SynchronizedOrchestratorResource();
-        //synOrch.setTimestamp(ts);
+        NFVResource synOrch = new NFVResource();
         v_init.inc_version();
-        synOrch.setVersion(v_init);
-        synOrch.setResource(orc);
-        synOrch.setHostId(hostId);
+
+        synOrch.setNFVResources(orc);
         ///
+
+            if(rsCache.getNFVResources() != null) {
+                if (synOrch.getNFVResources().getNetworkResources().equals(rsCache.getNFVResources().getNetworkResources())
+                        || synOrch.getNFVResources().getServiceResources().equals(rsCache.getNFVResources().getServiceResources()))
+                {
+                    // If Resource information has not changed
+                    // then dont add it to the flooding queue
+                    synOrch.setVersion(NSSynchronize.getMaximalResourceList().get(hostId)
+                    .getVersion());
+                }
+                else
+                    {
+                        //If resource information of present cnfvo node has chhanged then
+                        // add it to the flooding queue
+                    synOrch.setVersion(v_init.getVersion());
+                    NSSynchronize.getResourceCache().put(hostId, synOrch);
+
+                }
+            }
+            else
+            {
+                synOrch.setVersion(v_init.getVersion());
+                NSSynchronize.getResourceCache().put(hostId, synOrch);
+            }
+
+        NSSynchronize.getMaximalResourceList().put(hostId,synOrch);
         NetworkTopology nt = new NetworkTopology();
 
         // Check if interfaces are running before assigning to local topology matrix
@@ -115,24 +128,19 @@ public class Main {
         }
 
         nt.setCNFVOMCastGrp(synchMGroup);
-        nt.setActiveInterfaces(localInterfaces);
-        //nt.setTimestamp(ts);///
-        nt.setVersion(v_init);
+
         for(SynchronizationInterface s : synchArray)
         {
-
             s.getNsHelloMsg().setHostId(hostId);
-            s.getNsHelloMsg().setLocalTopology(nt);
+            s.getNsHelloMsg().setCnfvoInfo(nt);
         }
 
-        //System.out.println("Press 1 to send hello messages : ");
-        //int j = sc.nextInt();
             for(SynchronizationInterface si : synchArray)
             {
 
                 try
                 {
-                    si.process();
+                    si.send_hello(hostId,v_init.getVersion());
                 }
                 catch (Exception e)
                 {
@@ -140,28 +148,54 @@ public class Main {
                     //Log when an interface goes down
                 }
             }
+            if(NSHello.isSendGetRequest())
+            {
+                for(SynchronizationInterface si : synchArray)
+                {
+
+                    try
+                    {
+                        si.request_Globalresource_view();
+                    }
+                    catch (Exception e)
+                    {
+                        System.out.println("The link is down !!" + si.getIpAddress());
+                        //Log when an interface goes down
+                    }
+                }
+                NSHello.setSendGetRequest(false);
+            }
             Thread.sleep(2000);
             System.out.println("Proceeding with synch messages after sleep");
-            for(SynchronizationInterface si : synchArray)
-            {
 
-                try
+
+            if(! NSSynchronize.getResourceCache().isEmpty())
+            {
+                for(SynchronizationInterface si : synchArray)
                 {
-                    si.synchronize(hostId,synOrch);
+
+                    try
+                    {
+                        si.send_synchronize(NSSynchronize.getResourceCache());
+                    }
+                    catch (Exception e)
+                    {
+                        System.out.println("The link is down !!" + si.getIpAddress());
+                        //Log when an interface goes down
+                    }
                 }
-                catch (Exception e)
-                {
-                    System.out.println("The link is down !!" + si.getIpAddress());
-                    //Log when an interface goes down
-                }
+
+                NSSynchronize.getResourceCache().clear();
             }
 
         Thread.sleep(5000);
 
+        rsCache = synOrch;
+
         persistTransientLists();
         persistResourceList();
 
-        NSHello.getRtNeighbourhood().getNeighbors().clear();
+        NSHello.getRtNeighbourhood().getNeighbor().clear();
 
        // System.out.println("After sleep,Cleared transient list");
         //NSHello.getNeighborhood().getNeighbors().clear(); Doesnt make the

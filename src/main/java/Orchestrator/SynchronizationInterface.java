@@ -2,15 +2,14 @@ package Orchestrator;
 
 import Formatters.JsonFormatter;
 import Orchestrator.Messages.Hello;
-import Orchestrator.Messages.OrchestratorResource;
-import Orchestrator.Messages.SynchronizedOrchestratorResource;
+import Orchestrator.Messages.Fields.NFVResource;
+import Orchestrator.Messages.Synchronize;
 import Orchestrator.Resources.HelloHandler;
 import Orchestrator.Resources.NSHello;
 import Orchestrator.Resources.NSSynchronize;
 import Orchestrator.Resources.SynchronizationHandler;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.eclipse.californium.core.CoapClient;
-import org.eclipse.californium.core.CoapResource;
 import org.eclipse.californium.core.CoapServer;
 import org.eclipse.californium.core.coap.MediaTypeRegistry;
 import org.eclipse.californium.core.network.CoapEndpoint;
@@ -19,9 +18,7 @@ import org.slf4j.LoggerFactory;
 
 import java.net.InetSocketAddress;
 import java.net.SocketException;
-import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.Date;
+import java.util.HashMap;
 
 public class SynchronizationInterface
 {
@@ -29,7 +26,7 @@ public class SynchronizationInterface
                                 SynchronizationInterface.class.getCanonicalName());
     private String ipAddress = "";
     private String mGroup = "";
-    private SynchronizedOrchestratorResource selfResource ;
+    private NFVResource selfResource ;
     private static final int PORTNUM = 5700;
     private static final int SERVERPORT = 5600;
     private static String scheme = "coap://";
@@ -67,7 +64,7 @@ public class SynchronizationInterface
 
         this.coapServer.addEndpoint(this.serverEp);
         this.helloHandler = new HelloHandler(this);
-        this.synchHandler = new SynchronizationHandler();
+        this.synchHandler = new SynchronizationHandler(this.ipAddress);
 
         //this.nsHello = nsHello;
         //this.nsSynchronize = nsynch;
@@ -81,11 +78,11 @@ public class SynchronizationInterface
 
     }
 
-    public SynchronizedOrchestratorResource getSelfResource() {
+    public NFVResource getSelfResource() {
         return selfResource;
     }
 
-    public void setSelfResource(SynchronizedOrchestratorResource selfResource) {
+    public void setSelfResource(NFVResource selfResource) {
         this.selfResource = selfResource;
     }
 
@@ -107,10 +104,13 @@ public class SynchronizationInterface
         return nsHelloMsg;
     }
 
-    public void process() throws JsonProcessingException {
-        LOGGER.info("Inside Process Method ...");
+    public void send_hello(String hostId,int version) throws JsonProcessingException {
+        LOGGER.info("Inside send_hello Method ...");
         this.coapClient.setURI(mCastURIBase + "hello");
         LOGGER.info("Coap Client Target uri : "+this.coapClient.getURI());
+        NSHello.getMaximalVersionLedger().put(hostId,version);
+        this.nsHelloMsg.setGlobalVersionLedger(NSHello.getMaximalVersionLedger());
+        this.nsHelloMsg.setGlobalTopologyLedger(NSHello.getGlobalTopology());
         String helloMsg = JsonFormatter.getjsonRepresentation(this.nsHelloMsg);
         this.coapClient.post(helloHandler,helloMsg, MediaTypeRegistry.APPLICATION_JSON);
         LOGGER.info("Successfully sent Hello Message");
@@ -118,35 +118,22 @@ public class SynchronizationInterface
         /**/
     }
 
-    public void synchronize(String hostId, SynchronizedOrchestratorResource orsc) throws JsonProcessingException {
-        this.synchClient.setURI(mCastURIBase+"synchronize");
-        ArrayList<SynchronizedOrchestratorResource> synchOrchList ;
-        synchOrchList = NSSynchronize.getMaximalResourceList();
-        int index = 0;
-        for(SynchronizedOrchestratorResource synchOrch : synchOrchList)
-        {
-            // Only update the synchronized orchestrator data of the
-            // present node in the maximal resource list keep
-            // others intact
+    public void request_Globalresource_view()
+    {
+        LOGGER.info("Inside request_Globalresource_view Method ...");
+        this.synchClient.setURI(mCastURIBase + "synchronize");
+        this.synchClient.get(this.synchHandler);
 
-            if(synchOrch.getHostId().equalsIgnoreCase(hostId))
-            {
-                synchOrch = orsc;
-                synchOrchList.set(index,synchOrch);
-                break;
-            }
-            //If resource of present information is not present
-            // then add keep others intact
-            else
-            { }
-            index ++;
-        }
-        String synchMessage = JsonFormatter.getjsonRepresentation(synchOrchList);
-        this.synchClient.post(synchHandler,synchMessage,MediaTypeRegistry
-                                                                .APPLICATION_JSON );
+    }
 
-
-
-
+    public void send_synchronize(HashMap<String, NFVResource> resourceCache) throws JsonProcessingException
+    {
+        LOGGER.info("Inside send_synchronize Method ...");
+        this.synchClient.setURI(mCastURIBase + "synchronize");
+        Synchronize s = new Synchronize();
+        s.setSynchronizedResourceMap(resourceCache);
+        String synchMsg = JsonFormatter.getjsonRepresentation(s);
+        this.synchClient.post(synchHandler,synchMsg,MediaTypeRegistry.APPLICATION_JSON);
+        LOGGER.info("Successfully sent Synchronize Message");
     }
 }

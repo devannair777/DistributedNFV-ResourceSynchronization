@@ -1,21 +1,17 @@
 package Orchestrator.Validators;
 
 import Formatters.Version;
-import Orchestrator.Messages.SynchronizedOrchestratorResource;
 import Orchestrator.Resources.NSHello;
-import Orchestrator.Resources.NSSynchronize;
-import Orchestrator.Resources.NeighborTopology;
-import Orchestrator.Resources.Neighborhood;
+import Orchestrator.Messages.Fields.Neighborhood;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
-import java.sql.Timestamp;
 import java.util.*;
 
-public class NeighborValidators  {
+public class ExpirationValidators  {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(NeighborValidators.class.getCanonicalName());
+    private static final Logger LOGGER = LoggerFactory.getLogger(ExpirationValidators.class.getCanonicalName());
     private static HashMap<String,Version> resourceversionCache = new HashMap<>();
     private static HashMap<String,Version> neighborVersionCache = new HashMap<>();
     private Timer validationTimer ;
@@ -23,7 +19,7 @@ public class NeighborValidators  {
     private int delay = 30000;
     private String selfName = "";
 
-    public NeighborValidators(String thisname)
+    public ExpirationValidators(String thisname)
     {
         this.selfName = thisname;
         this.validationTimer = new Timer();
@@ -46,10 +42,10 @@ public class NeighborValidators  {
             BufferedWriter bufferedWriter = null;
             BufferedWriter bw3 = null;
             int index = 0;
-                try
+                /*try
                 {
 
-                    Neighborhood nh = NSHello.getNeighborhood();
+                   Neighborhood nh = NSHello.getNeighborhood();
                     bufferedWriter = new BufferedWriter(new FileWriter("Partitions.log",true));
 
                     for(NeighborTopology nt : nh.getNeighbors())
@@ -86,14 +82,14 @@ public class NeighborValidators  {
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
-                }
+                }*/
 
                 BufferedWriter bw = null;
                 try
                 {
                     bw = new BufferedWriter(new FileWriter("NetworkPartition.log",true));
                     bw3 = new BufferedWriter(new FileWriter("VersionCache.log",true));
-                    ArrayList<SynchronizedOrchestratorResource> orcUpdate =
+                    /*ArrayList<SynchronizedOrchestratorResource> orcUpdate =
                     NSSynchronize.getMaximalResourceList();
 
                     for(SynchronizedOrchestratorResource syn : orcUpdate)
@@ -118,7 +114,9 @@ public class NeighborValidators  {
                             resourceversionCache.put(syn.getHostId(),syn.getVersion());
                         }
                        // index += 1;
-                    }
+
+
+                    }*/
                 } catch (IOException e) {
                     e.printStackTrace();
                 }

@@ -1,6 +1,6 @@
 package Formatters;
 
-import Orchestrator.Messages.OrchestratorResource;
+import Orchestrator.Messages.Fields.OrchestratorResource;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.FileNotFoundException;
