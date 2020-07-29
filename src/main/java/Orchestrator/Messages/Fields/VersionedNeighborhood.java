@@ -5,9 +5,19 @@ import java.util.HashMap;
 public class VersionedNeighborhood
 {
     private HashMap<String, VersionedNetworkTopology> neighbor;
+    private int version = 0;
+
     public VersionedNeighborhood()
     {
         this.neighbor = new HashMap<>();
+    }
+
+    public int getVersion() {
+        return version;
+    }
+
+    public void setVersion(int version) {
+        this.version = version;
     }
 
     public HashMap<String, VersionedNetworkTopology> getNeighbor() {
@@ -18,4 +28,11 @@ public class VersionedNeighborhood
         this.neighbor = neighbor;
     }
 
+    @Override
+    public String toString() {
+        return "VersionedNeighborhood{" +
+                "neighbor=" + neighbor +
+                ", version=" + version +
+                '}';
+    }
 }

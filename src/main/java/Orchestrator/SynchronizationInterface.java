@@ -104,16 +104,23 @@ public class SynchronizationInterface
         return nsHelloMsg;
     }
 
-    public void send_hello(String hostId,int version) throws JsonProcessingException {
-        LOGGER.info("Inside send_hello Method ...");
-        this.coapClient.setURI(mCastURIBase + "hello");
-        LOGGER.info("Coap Client Target uri : "+this.coapClient.getURI());
-        NSHello.getMaximalVersionLedger().put(hostId,version);
-        this.nsHelloMsg.setGlobalVersionLedger(NSHello.getMaximalVersionLedger());
-        this.nsHelloMsg.setGlobalTopologyLedger(NSHello.getGlobalTopology());
-        String helloMsg = JsonFormatter.getjsonRepresentation(this.nsHelloMsg);
-        this.coapClient.post(helloHandler,helloMsg, MediaTypeRegistry.APPLICATION_JSON);
-        LOGGER.info("Successfully sent Hello Message");
+    public void send_hello(String hostId,int hello_version,int resource_version) throws JsonProcessingException {
+
+            LOGGER.info("Inside send_hello Method ...");
+            this.coapClient.setURI(mCastURIBase + "hello");
+            LOGGER.info("Coap Client Target uri : " + this.coapClient.getURI());
+            NSHello.getMaximalVersionLedger().put(hostId, resource_version);
+
+            NSHello.getGlobalTopology().put(hostId,NSHello.getRtNeighbourhood());
+            NSHello.getGlobalTopology().get(hostId).setVersion(hello_version);
+
+            this.nsHelloMsg.setGlobalTopologyLedger(NSHello.getGlobalTopology());
+            this.nsHelloMsg.setGlobalResourceVersionLedger(NSHello.getMaximalVersionLedger());
+
+            String helloMsg = JsonFormatter.getjsonRepresentation(this.nsHelloMsg);
+            this.coapClient.post(helloHandler, helloMsg, MediaTypeRegistry.APPLICATION_JSON);
+            LOGGER.info("Successfully sent Hello Message");
+
 
         /**/
     }

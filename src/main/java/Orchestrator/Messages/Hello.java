@@ -1,21 +1,21 @@
 package Orchestrator.Messages;
 
 import Orchestrator.Messages.Fields.NetworkTopology;
-import Orchestrator.Messages.Fields.Neighborhood;
+import Orchestrator.Messages.Fields.VersionedNeighborhood;
 
 import java.util.HashMap;
 
 public class Hello
 {
     private String hostId = "";
-    private HashMap<String, Neighborhood> globalTopologyLedger;
-    private HashMap<String,Integer> globalVersionLedger;
+    private HashMap<String, VersionedNeighborhood> globalTopologyLedger;
+    private HashMap<String,Integer> globalResourceVersionLedger;
     private NetworkTopology cnfvoInfo ;
 
     public Hello()
     {
         this.globalTopologyLedger = new HashMap<>();
-        this.globalVersionLedger = new HashMap<>();
+        this.globalResourceVersionLedger = new HashMap<>();
         this.cnfvoInfo = new NetworkTopology();
     }
 
@@ -27,20 +27,20 @@ public class Hello
         this.hostId = hostId;
     }
 
-    public HashMap<String, Neighborhood> getGlobalTopologyLedger() {
+    public HashMap<String, Integer> getGlobalResourceVersionLedger() {
+        return globalResourceVersionLedger;
+    }
+
+    public void setGlobalResourceVersionLedger(HashMap<String, Integer> globalResourceVersionLedger) {
+        this.globalResourceVersionLedger = globalResourceVersionLedger;
+    }
+
+    public HashMap<String, VersionedNeighborhood> getGlobalTopologyLedger() {
         return globalTopologyLedger;
     }
 
-    public void setGlobalTopologyLedger(HashMap<String, Neighborhood> globalTopologyLedger) {
+    public void setGlobalTopologyLedger(HashMap<String, VersionedNeighborhood> globalTopologyLedger) {
         this.globalTopologyLedger = globalTopologyLedger;
-    }
-
-    public HashMap<String, Integer> getGlobalVersionLedger() {
-        return globalVersionLedger;
-    }
-
-    public void setGlobalVersionLedger(HashMap<String, Integer> globalVersionLedger) {
-        this.globalVersionLedger = globalVersionLedger;
     }
 
     public NetworkTopology getCnfvoInfo() {
@@ -56,7 +56,7 @@ public class Hello
         return "Hello{" +
                 "hostId='" + hostId + '\'' +
                 ", globalTopologyLedger=" + globalTopologyLedger +
-                ", globalVersionLedger=" + globalVersionLedger +
+                ", globalVersionLedger=" + globalResourceVersionLedger +
                 ", cnfvoInfo=" + cnfvoInfo +
                 '}';
     }

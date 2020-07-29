@@ -4,9 +4,7 @@ import Formatters.Config;
 import Formatters.ConfigLoader;
 import Formatters.ResourceLoader;
 import Formatters.Version;
-import Orchestrator.Messages.Fields.NFVResource;
-import Orchestrator.Messages.Fields.NetworkTopology;
-import Orchestrator.Messages.Fields.OrchestratorResource;
+import Orchestrator.Messages.Fields.*;
 import Orchestrator.Resources.NSHello;
 import Orchestrator.Resources.NSSynchronize;
 import Orchestrator.SynchronizationInterface;
@@ -74,6 +72,7 @@ public class Main {
         //while loop and schedule the whole process below
         int count = 0;
 
+        int resource_version ;
         ArrayList<String> localInterfaces ;
         while(count < 200)
         {
@@ -92,21 +91,25 @@ public class Main {
                 {
                     // If Resource information has not changed
                     // then dont add it to the flooding queue
-                    synOrch.setVersion(NSSynchronize.getMaximalResourceList().get(hostId)
-                    .getVersion());
+                    resource_version = NSSynchronize.getMaximalResourceList().get(hostId)
+                            .getVersion();
+                    synOrch.setVersion(resource_version);
                 }
                 else
                     {
-                        //If resource information of present cnfvo node has chhanged then
+                        //If resource information of present cnfvo node has changed then
                         // add it to the flooding queue
-                    synOrch.setVersion(v_init.getVersion());
+
+                    resource_version = v_init.getVersion();
+                    synOrch.setVersion(resource_version);
                     NSSynchronize.getResourceCache().put(hostId, synOrch);
 
                 }
             }
             else
             {
-                synOrch.setVersion(v_init.getVersion());
+                resource_version = v_init.getVersion();
+                synOrch.setVersion(resource_version);
                 NSSynchronize.getResourceCache().put(hostId, synOrch);
             }
 
@@ -140,14 +143,16 @@ public class Main {
 
                 try
                 {
-                    si.send_hello(hostId,v_init.getVersion());
+                    si.send_hello(hostId,v_init.getVersion(),resource_version);
                 }
                 catch (Exception e)
                 {
-                    System.out.println("The link is down !!" + si.getIpAddress());
+                    System.out.println("Hello Message error:"+e.getMessage());
                     //Log when an interface goes down
                 }
             }
+            VersionedNeighborhood rtNeighbors = NSHello.getRtNeighbourhood();
+            NSHello.getRtNeighbourhood().getNeighbor().clear();
             if(NSHello.isSendGetRequest())
             {
                 for(SynchronizationInterface si : synchArray)
@@ -164,8 +169,9 @@ public class Main {
                     }
                 }
                 NSHello.setSendGetRequest(false);
+                Thread.sleep(2000);
             }
-            Thread.sleep(2000);
+            Thread.sleep(5000);
             System.out.println("Proceeding with synch messages after sleep");
 
 
@@ -189,13 +195,14 @@ public class Main {
             }
 
         Thread.sleep(5000);
+        //maintain_global_topology(hostId);
 
         rsCache = synOrch;
 
-        persistTransientLists();
+        persistTransientLists(rtNeighbors);
         persistResourceList();
 
-        NSHello.getRtNeighbourhood().getNeighbor().clear();
+       // NSHello.getRtNeighbourhood().getNeighbor().clear();
 
        // System.out.println("After sleep,Cleared transient list");
         //NSHello.getNeighborhood().getNeighbors().clear(); Doesnt make the
@@ -204,6 +211,20 @@ public class Main {
         count ++;
         }
         // while loop end
+    }
+
+    private static void maintain_global_topology(String hostId)
+    {
+        /*Neighborhood nh = new Neighborhood();
+        NetworkTopology nt = new NetworkTopology();
+        HashMap<String, VersionedNetworkTopology> rtNeighbors = NSHello.getRtNeighbourhood().getNeighbor();
+        for(String neighborHost : rtNeighbors.keySet())
+        {
+            nt.setCNFVOMCastGrp(rtNeighbors.get(neighborHost).getCNFVOMCastGrp());
+            nh.getNeighbor().put(neighborHost,nt);
+
+        }
+        NSHello.getGlobalTopology().put(hostId,nh);*/
     }
 
     private static void persistResourceList()
@@ -232,7 +253,7 @@ public class Main {
         }
     }
 
-    private static void persistTransientLists()
+    private static void persistTransientLists(VersionedNeighborhood vn)
     {
         Yaml yaml = new Yaml();
         FileWriter fwRt = null;
@@ -241,7 +262,7 @@ public class Main {
         {
             fwRt = new FileWriter("Neighbors.yaml",false);
             bwRt = new BufferedWriter(fwRt);
-            yaml.dump(NSHello.getRtNeighbourhood(),bwRt);
+            yaml.dump(vn,bwRt);
 
         } catch (IOException e) {
             e.printStackTrace();
