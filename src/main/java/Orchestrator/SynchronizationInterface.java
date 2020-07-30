@@ -113,10 +113,9 @@ public class SynchronizationInterface
 
             NSHello.getGlobalTopology().put(hostId,NSHello.getRtNeighbourhood());
             NSHello.getGlobalTopology().get(hostId).setVersion(hello_version);
+            NSHello.getGlobalTopology().get(hostId).setResVersion(resource_version);
 
             this.nsHelloMsg.setGlobalTopologyLedger(NSHello.getGlobalTopology());
-            this.nsHelloMsg.setGlobalResourceVersionLedger(NSHello.getMaximalVersionLedger());
-
             String helloMsg = JsonFormatter.getjsonRepresentation(this.nsHelloMsg);
             this.coapClient.post(helloHandler, helloMsg, MediaTypeRegistry.APPLICATION_JSON);
             LOGGER.info("Successfully sent Hello Message");

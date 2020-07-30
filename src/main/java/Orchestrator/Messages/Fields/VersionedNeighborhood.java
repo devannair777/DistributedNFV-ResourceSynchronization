@@ -6,6 +6,7 @@ public class VersionedNeighborhood
 {
     private HashMap<String, VersionedNetworkTopology> neighbor;
     private int version = 0;
+    private int resVersion = 0;
 
     public VersionedNeighborhood()
     {
@@ -18,6 +19,14 @@ public class VersionedNeighborhood
 
     public void setVersion(int version) {
         this.version = version;
+    }
+
+    public int getResVersion() {
+        return resVersion;
+    }
+
+    public void setResVersion(int resVersion) {
+        this.resVersion = resVersion;
     }
 
     public HashMap<String, VersionedNetworkTopology> getNeighbor() {
@@ -33,6 +42,7 @@ public class VersionedNeighborhood
         return "VersionedNeighborhood{" +
                 "neighbor=" + neighbor +
                 ", version=" + version +
+                ", resVersion=" + resVersion +
                 '}';
     }
 }

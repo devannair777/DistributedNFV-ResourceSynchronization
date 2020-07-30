@@ -74,8 +74,10 @@ public class Main {
 
         int resource_version ;
         ArrayList<String> localInterfaces ;
+
         while(count < 200)
         {
+
         localInterfaces = new ArrayList<>();
         //Synchronized orchestrator object of the scheduler //
         OrchestratorResource orc = ResourceLoader. getResourceFromYaml();
@@ -87,7 +89,7 @@ public class Main {
 
             if(rsCache.getNFVResources() != null) {
                 if (synOrch.getNFVResources().getNetworkResources().equals(rsCache.getNFVResources().getNetworkResources())
-                        || synOrch.getNFVResources().getServiceResources().equals(rsCache.getNFVResources().getServiceResources()))
+                        && synOrch.getNFVResources().getServiceResources().equals(rsCache.getNFVResources().getServiceResources()))
                 {
                     // If Resource information has not changed
                     // then dont add it to the flooding queue
@@ -114,7 +116,6 @@ public class Main {
             }
 
         NSSynchronize.getMaximalResourceList().put(hostId,synOrch);
-        NetworkTopology nt = new NetworkTopology();
 
         // Check if interfaces are running before assigning to local topology matrix
 
@@ -130,12 +131,9 @@ public class Main {
 
         }
 
-        nt.setCNFVOMCastGrp(synchMGroup);
-
         for(SynchronizationInterface s : synchArray)
         {
             s.getNsHelloMsg().setHostId(hostId);
-            s.getNsHelloMsg().setCnfvoInfo(nt);
         }
 
             for(SynchronizationInterface si : synchArray)
@@ -152,7 +150,10 @@ public class Main {
                 }
             }
             VersionedNeighborhood rtNeighbors = NSHello.getRtNeighbourhood();
-            NSHello.getRtNeighbourhood().getNeighbor().clear();
+            if(count%3 == 0)
+            {
+                NSHello.getRtNeighbourhood().getNeighbor().clear();
+            }
             if(NSHello.isSendGetRequest())
             {
                 for(SynchronizationInterface si : synchArray)
@@ -195,36 +196,14 @@ public class Main {
             }
 
         Thread.sleep(5000);
-        //maintain_global_topology(hostId);
-
         rsCache = synOrch;
 
         persistTransientLists(rtNeighbors);
         persistResourceList();
 
-       // NSHello.getRtNeighbourhood().getNeighbor().clear();
-
-       // System.out.println("After sleep,Cleared transient list");
-        //NSHello.getNeighborhood().getNeighbors().clear(); Doesnt make the
-        // MaximalNeighborTopology.yaml maximal
-        //entry list
         count ++;
         }
         // while loop end
-    }
-
-    private static void maintain_global_topology(String hostId)
-    {
-        /*Neighborhood nh = new Neighborhood();
-        NetworkTopology nt = new NetworkTopology();
-        HashMap<String, VersionedNetworkTopology> rtNeighbors = NSHello.getRtNeighbourhood().getNeighbor();
-        for(String neighborHost : rtNeighbors.keySet())
-        {
-            nt.setCNFVOMCastGrp(rtNeighbors.get(neighborHost).getCNFVOMCastGrp());
-            nh.getNeighbor().put(neighborHost,nt);
-
-        }
-        NSHello.getGlobalTopology().put(hostId,nh);*/
     }
 
     private static void persistResourceList()

@@ -108,7 +108,7 @@ public class NSSynchronize extends CoapResource {
 
                             if (maximalResourceList.get(hostName).getNFVResources().getServiceResources().
                                     equals(rcvSynch.getSynchronizedResourceMap().get(hostName).getNFVResources().getServiceResources())
-                                    || maximalResourceList.get(hostName).getNFVResources().getNetworkResources().
+                                    && maximalResourceList.get(hostName).getNFVResources().getNetworkResources().
                                     equals(rcvSynch.getSynchronizedResourceMap().get(hostName).getNFVResources().getNetworkResources()))
                             {
                                 //If an entry that is already present in maximal resource list is the one that is received

@@ -2,7 +2,6 @@ package Orchestrator.Validators;
 
 import Formatters.Version;
 import Orchestrator.Resources.NSHello;
-import Orchestrator.Messages.Fields.Neighborhood;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
