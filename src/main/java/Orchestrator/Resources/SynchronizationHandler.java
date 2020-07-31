@@ -49,6 +49,7 @@ public class SynchronizationHandler implements CoapHandler {
                 }
             }
             NSSynchronize.setMaximalResourceList(temp);
+            NSSynchronize.setIsUpdated(true);
 
         }
         catch(IOException ioe)

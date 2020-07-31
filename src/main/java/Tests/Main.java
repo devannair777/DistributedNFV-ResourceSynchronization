@@ -7,16 +7,15 @@ import Formatters.Version;
 import Orchestrator.Messages.Fields.*;
 import Orchestrator.Resources.NSHello;
 import Orchestrator.Resources.NSSynchronize;
+import Orchestrator.Scheduler.Scheduler;
 import Orchestrator.SynchronizationInterface;
-import Orchestrator.Validators.ExpirationValidators;
+import Orchestrator.Validators.BFSAlg;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.BufferedWriter;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.net.InetSocketAddress;
-import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.util.*;
 
@@ -29,8 +28,6 @@ public class Main {
 
         NFVResource rsCache = new NFVResource();
 
-        Scanner sc = new Scanner(System.in);
-        int i = 0;
         List<SynchronizationInterface> synchArray = new ArrayList<>();
         List<NSHello> helloRsrcArray = new ArrayList<>();
         List<NSSynchronize> synchRsrcArray = new ArrayList<>();
@@ -67,18 +64,17 @@ public class Main {
 
         //Initialize a Dummy Resource list //
         Version v_init = new Version();
-        ExpirationValidators nv = new ExpirationValidators(hostId);
+        Scheduler scheduler = new Scheduler(hostId);
 
         //while loop and schedule the whole process below
         int count = 0;
 
         int resource_version ;
-        ArrayList<String> localInterfaces ;
+        /*ArrayList<String> localInterfaces ;*/
 
         while(count < 200)
         {
 
-        localInterfaces = new ArrayList<>();
         //Synchronized orchestrator object of the scheduler //
         OrchestratorResource orc = ResourceLoader. getResourceFromYaml();
         NFVResource synOrch = new NFVResource();
@@ -105,6 +101,7 @@ public class Main {
                     resource_version = v_init.getVersion();
                     synOrch.setVersion(resource_version);
                     NSSynchronize.getResourceCache().put(hostId, synOrch);
+                    NSSynchronize.setIsUpdated(true);
 
                 }
             }
@@ -113,23 +110,10 @@ public class Main {
                 resource_version = v_init.getVersion();
                 synOrch.setVersion(resource_version);
                 NSSynchronize.getResourceCache().put(hostId, synOrch);
+                NSSynchronize.setIsUpdated(true);
             }
 
         NSSynchronize.getMaximalResourceList().put(hostId,synOrch);
-
-        // Check if interfaces are running before assigning to local topology matrix
-
-        for(String intf :  cf.getInterfaces())
-        {
-            NetworkInterface ni = NetworkInterface.getByInetAddress(
-                    new InetSocketAddress(intf,5600).getAddress()
-            );
-            if(ni.isUp())
-            {
-                localInterfaces.add(intf);
-            }
-
-        }
 
         for(SynchronizationInterface s : synchArray)
         {
@@ -149,7 +133,6 @@ public class Main {
                     //Log when an interface goes down
                 }
             }
-            VersionedNeighborhood rtNeighbors = NSHello.getRtNeighbourhood();
             if(count%3 == 0)
             {
                 NSHello.getRtNeighbourhood().getNeighbor().clear();
@@ -173,8 +156,6 @@ public class Main {
                 Thread.sleep(2000);
             }
             Thread.sleep(5000);
-            System.out.println("Proceeding with synch messages after sleep");
-
 
             if(! NSSynchronize.getResourceCache().isEmpty())
             {
@@ -198,8 +179,11 @@ public class Main {
         Thread.sleep(5000);
         rsCache = synOrch;
 
-        persistTransientLists(rtNeighbors);
-        persistResourceList();
+        if(NSSynchronize.isIsUpdated())
+        {
+            persistResourceList();
+            NSSynchronize.setIsUpdated(false);
+        }
 
         count ++;
         }
@@ -232,30 +216,4 @@ public class Main {
         }
     }
 
-    private static void persistTransientLists(VersionedNeighborhood vn)
-    {
-        Yaml yaml = new Yaml();
-        FileWriter fwRt = null;
-        BufferedWriter bwRt = null;
-        try
-        {
-            fwRt = new FileWriter("Neighbors.yaml",false);
-            bwRt = new BufferedWriter(fwRt);
-            yaml.dump(vn,bwRt);
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        finally
-        {
-            try
-            {
-                fwRt.close();
-                bwRt.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-
-    }
 }

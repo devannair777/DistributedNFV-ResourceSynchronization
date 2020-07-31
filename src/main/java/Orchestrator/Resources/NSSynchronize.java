@@ -21,6 +21,8 @@ public class NSSynchronize extends CoapResource {
     //Flooding Queue
     private static HashMap<String, NFVResource> resourceCache = new HashMap<>();
 
+    //Update Trigger
+    private static boolean isUpdated = false;
 
     public NSSynchronize(String ipAddress) {
         super("synchronize");
@@ -47,6 +49,14 @@ public class NSSynchronize extends CoapResource {
 
     public static HashMap<String, NFVResource> getResourceCache() {
         return resourceCache;
+    }
+
+    public static boolean isIsUpdated() {
+        return isUpdated;
+    }
+
+    public static void setIsUpdated(boolean isUpdated) {
+        NSSynchronize.isUpdated = isUpdated;
     }
 
     @Override
@@ -119,7 +129,7 @@ public class NSSynchronize extends CoapResource {
                                 //add it to the flooding queue and maximal queue
                                 resourceCache.put(hostName, rcvSynch.getSynchronizedResourceMap().get(hostName));
                                 maximalResourceList.put(hostName,rcvSynch.getSynchronizedResourceMap().get(hostName));
-
+                                isUpdated = true;
                             }
 
                         }
@@ -129,6 +139,7 @@ public class NSSynchronize extends CoapResource {
                             //both flooding queue and maximal resource list
                             resourceCache.put(hostName, rcvSynch.getSynchronizedResourceMap().get(hostName));
                             maximalResourceList.put(hostName,rcvSynch.getSynchronizedResourceMap().get(hostName));
+                            isUpdated = true;
                         }
                     }
                 }
