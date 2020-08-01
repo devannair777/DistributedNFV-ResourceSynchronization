@@ -5,7 +5,7 @@ def meta_constructor(loader,node):
     value = loader.construct_mapping(node)
     return value
 
-yaml.add_constructor(u'tag:yaml.org,2002:Orchestrator.Messages.OrchestratorResource',meta_constructor)
+yaml.add_constructor(u'tag:yaml.org,2002:Orchestrator.Messages.Fields.OrchestratorResource',meta_constructor)
 
 def addNetworkResource(nr):
     f = open('resource.yaml','r')

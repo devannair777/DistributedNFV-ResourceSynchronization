@@ -4,7 +4,7 @@ def meta_constructor(loader,node):
     value = loader.construct_mapping(node)
     return value
 
-yaml.add_constructor(u'tag:yaml.org,2002:Orchestrator.Messages.SynchronizedOrchestratorResource',meta_constructor)
+yaml.add_constructor(u'tag:yaml.org,2002:Orchestrator.Messages.Fields.NFVResource',meta_constructor)
 
 class orchObject:
     def __init__(self,resource,hostId):
@@ -29,8 +29,8 @@ def validator():
         resource_list = []
         f= open('pwd/' + i +'.conf/Resources.yaml','r')
         yObj = yaml.load(f)
-        for j in yObj:
-            o1 = orchObject(j['resource'],j['hostId'])
+        for j in yObj.keys():
+            o1 = orchObject(yObj[j]['NFVResources'],j)
             resource_list.append(o1)
         resource_list.sort(key=orchObject.getHostId)
 
