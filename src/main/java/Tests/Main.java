@@ -9,7 +9,6 @@ import Orchestrator.Resources.NSHello;
 import Orchestrator.Resources.NSSynchronize;
 import Orchestrator.Scheduler.Scheduler;
 import Orchestrator.SynchronizationInterface;
-import Orchestrator.Validators.BFSAlg;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.BufferedWriter;
@@ -72,7 +71,7 @@ public class Main {
         int resource_version ;
         /*ArrayList<String> localInterfaces ;*/
 
-        while(count < 200)
+        while(true)
         {
 
         //Synchronized orchestrator object of the scheduler //
