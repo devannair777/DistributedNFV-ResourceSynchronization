@@ -7,11 +7,11 @@ import java.util.HashMap;
 public class Hello
 {
     private String hostId = "";
-    private HashMap<String, VersionedNeighborhood> globalTopologyLedger;
+    private HashMap<String, VersionedNeighborhood> globalTopologyState;
 
     public Hello()
     {
-        this.globalTopologyLedger = new HashMap<>();
+        this.globalTopologyState = new HashMap<>();
     }
 
     public String getHostId() {
@@ -22,19 +22,19 @@ public class Hello
         this.hostId = hostId;
     }
 
-    public HashMap<String, VersionedNeighborhood> getGlobalTopologyLedger() {
-        return globalTopologyLedger;
+    public HashMap<String, VersionedNeighborhood> getGlobalTopologyState() {
+        return globalTopologyState;
     }
 
-    public void setGlobalTopologyLedger(HashMap<String, VersionedNeighborhood> globalTopologyLedger) {
-        this.globalTopologyLedger = globalTopologyLedger;
+    public void setGlobalTopologyState(HashMap<String, VersionedNeighborhood> globalTopologyState) {
+        this.globalTopologyState = globalTopologyState;
     }
 
     @Override
     public String toString() {
         return "Hello{" +
                 "hostId='" + hostId + '\'' +
-                ", globalTopologyLedger=" + globalTopologyLedger +
+                ", globalTopologyLedger=" + globalTopologyState +
                 '}';
     }
 }

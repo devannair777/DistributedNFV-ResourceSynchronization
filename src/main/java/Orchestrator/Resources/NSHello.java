@@ -78,7 +78,7 @@ public class NSHello extends CoapResource {
                 //Contexts of the received message
 
                 String remoteHost = rcvdMsg.getHostId();
-                HashMap<String,VersionedNeighborhood> received_topology = rcvdMsg.getGlobalTopologyLedger();
+                HashMap<String,VersionedNeighborhood> received_topology = rcvdMsg.getGlobalTopologyState();
 
                 int received_node_version = received_topology.get(remoteHost).getVersion();
 
