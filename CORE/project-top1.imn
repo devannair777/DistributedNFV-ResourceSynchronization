@@ -1,0 +1,806 @@
+node n1 {
+    type router
+    model router
+    network-config {
+	hostname n1
+	!
+	interface eth2
+	 ip address 192.168.26.1/24
+	!
+	interface eth0
+	 ip address 192.168.0.2/24
+	!
+	interface eth1
+	 ip address 192.168.1.1/24
+	!
+    }
+    canvas c1
+    iconcoords {177.0 225.0}
+    labelcoords {177.0 257.0}
+    interface-peer {eth0 n3}
+    interface-peer {eth1 n2}
+    custom-config {
+	custom-config-id service:UserDefined
+	custom-command UserDefined
+	config {
+	files=('config.sh', 'conf.yaml', 'resource.yaml', )
+	cmdup=('sh config.sh', )
+	}
+    }
+    custom-config {
+	custom-config-id service:UserDefined:resource.yaml
+	custom-command resource.yaml
+	config {
+	NetworkResources :
+	  - "NetwResource1Node1"
+	  - "NetwResource2Node1"
+	ServiceResources :
+	  - "ServiceResource1Node1"
+	  - "ServiceResource2Node1"
+	}
+    }
+    custom-config {
+	custom-config-id service:UserDefined:conf.yaml
+	custom-command conf.yaml
+	config {
+	interfaces:
+	  - "192.168.0.2"
+	  - "192.168.1.1"
+	  - "192.168.26.1"
+	mGroups :
+	  - "239.0.10.15"
+	  - "239.0.10.15"
+	  - "239.0.10.15"
+	}
+    }
+    custom-config {
+	custom-config-id service:UserDefined:config.sh
+	custom-command config.sh
+	config {
+	#! /bin/sh
+	cp /home/core-vm/CoRE-Models/DistributedOrchestration/ex/ResourceSynchronization.jar ResourceSynchronization.jar
+	cp /home/core-vm/CoRE-Models/DistributedOrchestration/ex/extensions.py extensions.py
+	cp /home/core-vm/CoRE-Models/DistributedOrchestration/ex/Californium.properties Californium.properties
+	java -jar ResourceSynchronization.jar &
+	}
+    }
+    services {OSPFv2 OSPFv3 zebra DefaultRoute IPForward UserDefined}
+    interface-peer {eth2 n25}
+}
+
+node n2 {
+    type router
+    model router
+    network-config {
+	hostname n2
+	!
+	interface eth4
+	 ip address 192.168.29.1/24
+	!
+	interface eth3
+	 ip address 192.168.30.1/24
+	!
+	interface eth2
+	 ip address 192.168.27.2/24
+	!
+	interface eth1
+	 ip address 192.168.14.2/24
+	!
+	interface eth0
+	 ip address 192.168.1.2/24
+	!
+    }
+    canvas c1
+    iconcoords {489.0 389.0}
+    labelcoords {489.0 421.0}
+    interface-peer {eth0 n1}
+    custom-config {
+	custom-config-id service:UserDefined
+	custom-command UserDefined
+	config {
+	files=('config.sh', 'conf.yaml', 'resource.yaml', )
+	cmdup=('sh config.sh', )
+	}
+    }
+    custom-config {
+	custom-config-id service:UserDefined:resource.yaml
+	custom-command resource.yaml
+	config {
+	NetworkResources :
+	  - "NetwResource1Node2"
+	  - "NetwResource2Node2"
+	ServiceResources :
+	  - "ServiceResource1Node2"
+	  - "ServiceResource2Node2"
+	}
+    }
+    custom-config {
+	custom-config-id service:UserDefined:conf.yaml
+	custom-command conf.yaml
+	config {
+	interfaces:
+	  - "192.168.1.2"
+	  - "192.168.14.2"
+	  - "192.168.27.2"
+	  - "192.168.30.1"
+	  - "192.168.29.1"
+	mGroups :
+	  - "239.0.10.15"
+	  - "239.0.10.15"
+	  - "239.0.10.15"
+	  - "239.0.10.15"
+	  - "239.0.10.15"
+	}
+    }
+    custom-config {
+	custom-config-id service:UserDefined:config.sh
+	custom-command config.sh
+	config {
+	#! /bin/sh
+	cp /home/core-vm/CoRE-Models/DistributedOrchestration/ex/ResourceSynchronization.jar ResourceSynchronization.jar
+	cp /home/core-vm/CoRE-Models/DistributedOrchestration/ex/extensions.py extensions.py
+	cp /home/core-vm/CoRE-Models/DistributedOrchestration/ex/Californium.properties Californium.properties
+	java -jar ResourceSynchronization.jar &
+	}
+    }
+    services {OSPFv2 OSPFv3 zebra DefaultRoute IPForward UserDefined}
+    interface-peer {eth1 n3}
+    interface-peer {eth2 n25}
+    interface-peer {eth3 n27}
+    interface-peer {eth4 n28}
+}
+
+node n3 {
+    type router
+    model router
+    network-config {
+	hostname n3
+	!
+	interface eth1
+	 ip address 192.168.14.1/24
+	!
+	interface eth0
+	 ip address 192.168.0.1/24
+	!
+    }
+    canvas c1
+    iconcoords {177.0 389.0}
+    labelcoords {177.0 421.0}
+    interface-peer {eth0 n1}
+    custom-config {
+	custom-config-id service:UserDefined
+	custom-command UserDefined
+	config {
+	files=('config.sh', 'conf.yaml', 'resource.yaml', )
+	cmdup=('sh config.sh', )
+	}
+    }
+    custom-config {
+	custom-config-id service:UserDefined:resource.yaml
+	custom-command resource.yaml
+	config {
+	NetworkResources :
+	  - "NetwResource1Node3"
+	  - "NetwResource2Node3"
+	ServiceResources :
+	  - "ServiceResource1Node3"
+	  - "ServiceResource2Node3"
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	}
+    }
+    custom-config {
+	custom-config-id service:UserDefined:conf.yaml
+	custom-command conf.yaml
+	config {
+	interfaces:
+	  - "192.168.0.1"
+	  - "192.168.14.1"
+	mGroups :
+	  - "239.0.10.15"
+	  - "239.0.10.15"
+	}
+    }
+    custom-config {
+	custom-config-id service:UserDefined:config.sh
+	custom-command config.sh
+	config {
+	#! /bin/sh
+	cp /home/core-vm/CoRE-Models/DistributedOrchestration/ex/ResourceSynchronization.jar ResourceSynchronization.jar
+	cp /home/core-vm/CoRE-Models/DistributedOrchestration/ex/extensions.py extensions.py
+	cp /home/core-vm/CoRE-Models/DistributedOrchestration/ex/Californium.properties Californium.properties
+	java -jar ResourceSynchronization.jar &
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	}
+    }
+    services {OSPFv2 OSPFv3 zebra DefaultRoute IPForward UserDefined}
+    interface-peer {eth1 n2}
+}
+
+node n25 {
+    type router
+    model router
+    network-config {
+	hostname n25
+	!
+	interface eth2
+	 ip address 192.168.28.1/24
+	!
+	interface eth1
+	 ip address 192.168.27.1/24
+	!
+	interface eth0
+	 ip address 192.168.26.2/24
+	!
+    }
+    canvas c1
+    iconcoords {489.0 225.0}
+    labelcoords {489.0 257.0}
+    interface-peer {eth0 n1}
+    interface-peer {eth1 n2}
+    custom-config {
+	custom-config-id service:UserDefined
+	custom-command UserDefined
+	config {
+	files=('conf.yaml', 'resource.yaml', 'config.sh', )
+	cmdup=('sh config.sh', )
+	}
+    }
+    custom-config {
+	custom-config-id service:UserDefined:config.sh
+	custom-command config.sh
+	config {
+	#! /bin/sh
+	cp /home/core-vm/CoRE-Models/DistributedOrchestration/ex/ResourceSynchronization.jar ResourceSynchronization.jar
+	cp /home/core-vm/CoRE-Models/DistributedOrchestration/ex/extensions.py extensions.py
+	cp /home/core-vm/CoRE-Models/DistributedOrchestration/ex/Californium.properties Californium.properties
+	java -jar ResourceSynchronization.jar &
+	}
+    }
+    custom-config {
+	custom-config-id service:UserDefined:resource.yaml
+	custom-command resource.yaml
+	config {
+	NetworkResources :
+	  - "NetwResource1Node25"
+	  - "NetwResource2Node25"
+	ServiceResources :
+	  - "ServiceResource1Node25"
+	  - "ServiceResource2Node25"
+	}
+    }
+    custom-config {
+	custom-config-id service:UserDefined:conf.yaml
+	custom-command conf.yaml
+	config {
+	interfaces:
+	  - "192.168.26.2"
+	  - "192.168.27.1"
+	  - "192.168.28.1"
+	mGroups :
+	  - "239.0.10.15"
+	  - "239.0.10.15"
+	  - "239.0.10.15"
+	}
+    }
+    services {OSPFv2 OSPFv3 zebra IPForward UserDefined}
+    interface-peer {eth2 n26}
+}
+
+node n26 {
+    type router
+    model router
+    network-config {
+	hostname n26
+	!
+	interface eth1
+	 ip address 192.168.31.1/24
+	!
+	interface eth0
+	 ip address 192.168.28.2/24
+	!
+    }
+    canvas c1
+    iconcoords {778.0 225.0}
+    labelcoords {778.0 257.0}
+    custom-config {
+	custom-config-id service:UserDefined
+	custom-command UserDefined
+	config {
+	files=('config.sh', 'conf.yaml', 'resource.yaml', )
+	cmdup=('sh config.sh', )
+	}
+    }
+    custom-config {
+	custom-config-id service:UserDefined:resource.yaml
+	custom-command resource.yaml
+	config {
+	NetworkResources :
+	  - "NetwResource1Node26"
+	  - "NetwResource2Node26"
+	ServiceResources :
+	  - "ServiceResource1Node26"
+	  - "ServiceResource2Node26"
+	}
+    }
+    custom-config {
+	custom-config-id service:UserDefined:conf.yaml
+	custom-command conf.yaml
+	config {
+	interfaces:
+	  - "192.168.28.2"
+	  - "192.168.31.1"
+	mGroups :
+	  - "239.0.10.15"
+	  - "239.0.10.15"
+	}
+    }
+    custom-config {
+	custom-config-id service:UserDefined:config.sh
+	custom-command config.sh
+	config {
+	#! /bin/sh
+	cp /home/core-vm/CoRE-Models/DistributedOrchestration/ex/ResourceSynchronization.jar ResourceSynchronization.jar
+	cp /home/core-vm/CoRE-Models/DistributedOrchestration/ex/extensions.py extensions.py
+	cp /home/core-vm/CoRE-Models/DistributedOrchestration/ex/Californium.properties Californium.properties
+	java -jar ResourceSynchronization.jar &
+	}
+    }
+    services {OSPFv2 OSPFv3 zebra DefaultRoute IPForward UserDefined}
+    interface-peer {eth0 n25}
+    interface-peer {eth1 n27}
+}
+
+node n27 {
+    type router
+    model router
+    network-config {
+	hostname n27
+	!
+	interface eth0
+	 ip address 192.168.33.2/24
+	!
+	interface eth2
+	 ip address 192.168.31.2/24
+	!
+	interface eth1
+	 ip address 192.168.30.2/24
+	!
+    }
+    canvas c1
+    iconcoords {778.0 389.0}
+    labelcoords {778.0 421.0}
+    interface-peer {eth1 n2}
+    custom-config {
+	custom-config-id service:UserDefined
+	custom-command UserDefined
+	config {
+	files=('conf.yaml', 'resource.yaml', 'config.sh', )
+	cmdup=('sh config.sh', )
+	}
+    }
+    custom-config {
+	custom-config-id service:UserDefined:config.sh
+	custom-command config.sh
+	config {
+	#! /bin/sh
+	cp /home/core-vm/CoRE-Models/DistributedOrchestration/ex/ResourceSynchronization.jar ResourceSynchronization.jar
+	cp /home/core-vm/CoRE-Models/DistributedOrchestration/ex/extensions.py extensions.py
+	cp /home/core-vm/CoRE-Models/DistributedOrchestration/ex/Californium.properties Californium.properties
+	java -jar ResourceSynchronization.jar &
+	}
+    }
+    custom-config {
+	custom-config-id service:UserDefined:resource.yaml
+	custom-command resource.yaml
+	config {
+	NetworkResources :
+	  - "NetwResource1Node27"
+	  - "NetwResource2Node27"
+	ServiceResources :
+	  - "ServiceResource1Node27"
+	  - "ServiceResource2Node27"
+	}
+    }
+    custom-config {
+	custom-config-id service:UserDefined:conf.yaml
+	custom-command conf.yaml
+	config {
+	interfaces:
+	  - "192.168.31.2"
+	  - "192.168.30.2"
+	  - "192.168.33.2"
+	mGroups :
+	  - "239.0.10.15"
+	  - "239.0.10.15"
+	  - "239.0.10.15"
+	}
+    }
+    services {OSPFv2 OSPFv3 zebra IPForward UserDefined}
+    interface-peer {eth2 n26}
+    interface-peer {eth0 n29}
+}
+
+node n28 {
+    type router
+    model router
+    network-config {
+	hostname n28
+	!
+	interface eth0
+	 ip address 192.168.32.1/24
+	!
+	interface eth1
+	 ip address 192.168.29.2/24
+	!
+    }
+    canvas c1
+    iconcoords {489.0 567.0}
+    labelcoords {489.0 599.0}
+    interface-peer {eth1 n2}
+    custom-config {
+	custom-config-id service:UserDefined
+	custom-command UserDefined
+	config {
+	files=('conf.yaml', 'resource.yaml', 'config.sh', )
+	cmdup=('sh config.sh', )
+	}
+    }
+    custom-config {
+	custom-config-id service:UserDefined:config.sh
+	custom-command config.sh
+	config {
+	#! /bin/sh
+	cp /home/core-vm/CoRE-Models/DistributedOrchestration/ex/ResourceSynchronization.jar ResourceSynchronization.jar
+	cp /home/core-vm/CoRE-Models/DistributedOrchestration/ex/extensions.py extensions.py
+	cp /home/core-vm/CoRE-Models/DistributedOrchestration/ex/Californium.properties Californium.properties
+	java -jar ResourceSynchronization.jar &
+	}
+    }
+    custom-config {
+	custom-config-id service:UserDefined:resource.yaml
+	custom-command resource.yaml
+	config {
+	NetworkResources :
+	  - "NetwResource1Node28"
+	  - "NetwResource2Node28"
+	ServiceResources :
+	  - "ServiceResource1Node28"
+	  - "ServiceResource2Node28"
+	}
+    }
+    custom-config {
+	custom-config-id service:UserDefined:conf.yaml
+	custom-command conf.yaml
+	config {
+	interfaces:
+	  - "192.168.29.2"
+	  - "192.168.32.1"
+	mGroups :
+	  - "239.0.10.15"
+	  - "239.0.10.15"
+	}
+    }
+    services {OSPFv2 OSPFv3 zebra IPForward UserDefined}
+    interface-peer {eth0 n29}
+}
+
+node n29 {
+    type router
+    model router
+    network-config {
+	hostname n29
+	!
+	interface eth1
+	 ip address 192.168.33.1/24
+	!
+	interface eth0
+	 ip address 192.168.32.2/24
+	!
+    }
+    canvas c1
+    iconcoords {777.0 567.0}
+    labelcoords {777.0 599.0}
+    custom-config {
+	custom-config-id service:UserDefined
+	custom-command UserDefined
+	config {
+	files=('conf.yaml', 'resource.yaml', 'config.sh', )
+	cmdup=('sh config.sh', )
+	}
+    }
+    custom-config {
+	custom-config-id service:UserDefined:config.sh
+	custom-command config.sh
+	config {
+	#! /bin/sh
+	cp /home/core-vm/CoRE-Models/DistributedOrchestration/ex/ResourceSynchronization.jar ResourceSynchronization.jar
+	cp /home/core-vm/CoRE-Models/DistributedOrchestration/ex/extensions.py extensions.py
+	cp /home/core-vm/CoRE-Models/DistributedOrchestration/ex/Californium.properties Californium.properties
+	java -jar ResourceSynchronization.jar &
+	}
+    }
+    custom-config {
+	custom-config-id service:UserDefined:resource.yaml
+	custom-command resource.yaml
+	config {
+	NetworkResources :
+	  - "NetwResource1Node29"
+	  - "NetwResource2Node29"
+	ServiceResources :
+	  - "ServiceResource1Node29"
+	  - "ServiceResource2Node29"
+	}
+    }
+    custom-config {
+	custom-config-id service:UserDefined:conf.yaml
+	custom-command conf.yaml
+	config {
+	interfaces:
+	  - "192.168.33.1"
+	  - "192.168.32.2"
+	mGroups :
+	  - "239.0.10.15"
+	  - "239.0.10.15"
+	}
+    }
+    services {OSPFv2 OSPFv3 zebra IPForward UserDefined}
+    interface-peer {eth0 n28}
+    interface-peer {eth1 n27}
+}
+
+link l1 {
+    nodes {n3 n1}
+    bandwidth 0
+}
+
+link l2 {
+    nodes {n1 n2}
+    bandwidth 0
+}
+
+link l15 {
+    nodes {n3 n2}
+    bandwidth 0
+}
+
+link l29 {
+    nodes {n1 n25}
+    bandwidth 0
+}
+
+link l30 {
+    nodes {n25 n2}
+    bandwidth 0
+}
+
+link l31 {
+    nodes {n25 n26}
+    bandwidth 0
+}
+
+link l33 {
+    nodes {n27 n2}
+    bandwidth 0
+}
+
+link l34 {
+    nodes {n27 n26}
+    bandwidth 0
+}
+
+link l32 {
+    nodes {n28 n2}
+    bandwidth 0
+}
+
+link l35 {
+    nodes {n28 n29}
+    bandwidth 0
+}
+
+link l36 {
+    nodes {n29 n27}
+    bandwidth 0
+}
+
+annotation a1 {
+    iconcoords {233.0 86.0}
+    type text
+    label {Dynamic Resource Synchronization}
+    labelcolor black
+    fontfamily {Arial}
+    fontsize {24}
+    effects {bold}
+    canvas c1
+}
+
+annotation a2 {
+    type text
+    iconcoords {503.0 62.0}
+    label {}
+    canvas c1
+}
+
+annotation a3 {
+    iconcoords {156.0 188.0}
+    type text
+    label {Host02}
+    labelcolor black
+    fontfamily {Arial}
+    fontsize {12}
+    canvas c1
+}
+
+annotation a4 {
+    iconcoords {464.0 186.0}
+    type text
+    label {Host262}
+    labelcolor black
+    fontfamily {Arial}
+    fontsize {12}
+    canvas c1
+}
+
+annotation a5 {
+    iconcoords {748.0 186.0}
+    type text
+    label {Host282}
+    labelcolor black
+    fontfamily {Arial}
+    fontsize {12}
+    canvas c1
+}
+
+annotation a6 {
+    iconcoords {154.0 442.0}
+    type text
+    label {Host01}
+    labelcolor black
+    fontfamily {Arial}
+    fontsize {12}
+    canvas c1
+}
+
+annotation a7 {
+    iconcoords {420.0 442.0}
+    type text
+    label {Host12}
+    labelcolor black
+    fontfamily {Arial}
+    fontsize {12}
+    canvas c1
+}
+
+annotation a8 {
+    iconcoords {818.0 380.0}
+    type text
+    label {Host312}
+    labelcolor black
+    fontfamily {Arial}
+    fontsize {12}
+    canvas c1
+}
+
+annotation a9 {
+    iconcoords {464.0 612.0}
+    type text
+    label {Host292}
+    labelcolor black
+    fontfamily {Arial}
+    fontsize {12}
+    canvas c1
+}
+
+annotation a10 {
+    iconcoords {752.0 612.0}
+    type text
+    label {Host331}
+    labelcolor black
+    fontfamily {Arial}
+    fontsize {12}
+    canvas c1
+}
+
+annotation a11 {
+    type text
+    iconcoords {986.0 394.0}
+    label {}
+    canvas c1
+}
+
+annotation a12 {
+    iconcoords {379.0 143.0 603.0 480.0}
+    type rectangle
+    label {}
+    labelcolor black
+    fontfamily {Arial}
+    fontsize {12}
+    color #ff6b41
+    width 0
+    border #ff6b41
+    rad 25
+    canvas c1
+}
+
+annotation a13 {
+    iconcoords {75.0 143.0 305.0 480.0}
+    type rectangle
+    label {}
+    labelcolor black
+    fontfamily {Arial}
+    fontsize {12}
+    color #c0c0ff
+    width 0
+    border #c0c0ff
+    rad 25
+    canvas c1
+}
+
+annotation a14 {
+    iconcoords {676.0 144.0 880.0 672.0}
+    type rectangle
+    label {}
+    labelcolor black
+    fontfamily {Arial}
+    fontsize {12}
+    color #C0C0FF
+    width 0
+    border #c0c0ff
+    rad 25
+    canvas c1
+}
+
+annotation a15 {
+    iconcoords {350 492 872 672}
+    type rectangle
+    label {}
+    labelcolor black
+    fontfamily {Arial}
+    fontsize {12}
+    color #C0C0FF
+    width 0
+    border #c0c0ff
+    rad 25
+    canvas c1
+}
+
+canvas c1 {
+    name {Canvas1}
+}
+
+option global {
+    interface_names no
+    ip_addresses yes
+    ipv6_addresses yes
+    node_labels yes
+    link_labels yes
+    show_api no
+    background_images no
+    annotations yes
+    grid yes
+    traffic_start 0
+}
+
+option session {
+}
+
